@@ -1,0 +1,143 @@
+########################
+# OS / System
+########################
+.DS_Store
+Thumbs.db
+*.log
+*.sql
+
+########################
+# Java / Maven
+########################
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+########################
+# IDE - IntelliJ
+########################
+.idea/
+*.iml
+out/
+
+########################
+# IDE - Eclipse
+########################
+.project
+.classpath
+.settings/
+
+########################
+# IDE - VS Code
+########################
+.vscode/
+
+########################
+# Node / React
+########################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# React build
+build/
+dist/
+
+########################
+# Environment variables
+########################
+.env
+.env.local
+.env.development
+.env.production
+
+########################
+# Docker
+########################
+*.tar
+docker-data/
+docker-volume/
+.dockerignore
+
+########################
+# Test / Coverage
+########################
+coverage/
+*.lcov
+
+########################
+# Temporary files
+########################
+tmp/
+temp/
+*.swp
+*.swo
+
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# Virtual Environment
+# =========================
+.venv/
+venv/
+env/
+ENV/
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+*.iml
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs & temp
+# =========================
+*.log
+*.tmp
+
+# =========================
+# Build / dist
+# =========================
+build/
+dist/
+*.egg-info/
+
+# =========================
+# Testing / Coverage
+# =========================
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+
