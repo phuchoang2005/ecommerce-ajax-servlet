@@ -1,0 +1,111 @@
+openapi: 3.0.0
+info:
+  title: Authentication API
+  description: API phục vụ chức năng xác thực người dùng cho ứng dụng Web Servlet + Ajax.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/my-app/api/v1
+    description: Local development server
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Đăng nhập hệ thống
+      description: Gửi thông tin tài khoản để xác thực và khởi tạo phiên làm việc (Session).
+      operationId: loginUser
+      requestBody:
+        description: Thông tin đăng nhập của người dùng
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Đăng nhập thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "400":
+          description: Dữ liệu đầu vào không hợp lệ (Thiếu username/password)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Sai tài khoản hoặc mật khẩu
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Lỗi hệ thống hoặc lỗi Database
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: admin_user
+          minLength: 3
+        password:
+          type: string
+          format: password
+          example: "P@ssw0rd123"
+
+    LoginResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "Login successful"
+        data:
+          type: object
+          properties:
+            userId:
+              type: integer
+              example: 101
+            username:
+              type: string
+              example: admin_user
+            role:
+              type: string
+              example: "ADMIN"
+
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          example: 401
+        error:
+          type: string
+          example: "Unauthorized"
+        message:
+          type: string
+          example: "Invalid username or password"
+        path:
+          type: string
+          example: "/api/v1/auth/login"

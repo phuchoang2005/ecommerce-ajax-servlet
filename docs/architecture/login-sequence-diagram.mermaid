@@ -1,0 +1,46 @@
+sequenceDiagram
+    autonumber
+    participant U as User (Browser)
+    participant JS as Client (AJAX/Fetch)
+    participant C as Controller (LoginServlet)
+    participant S as Service (UserService)
+    participant R as Repository (UserRepository)
+    participant DB as Database (MySQL/PostgreSQL)
+
+    U->>JS: Nhập Username/Password & Click Login
+    
+    Note over JS: Ngăn chặn reload trang (e.preventDefault())
+    JS->>C: POST /api/v1/auth/login (JSON Body)
+    
+    activate C
+    C->>C: Validate JSON & Mapping to LoginRequestDTO
+    
+    alt Dữ liệu không hợp lệ (Trống/Sai định dạng)
+        C-->>JS: 400 Bad Request (JSON Error)
+    else Dữ liệu hợp lệ
+        C->>S: checkLogin(loginDTO)
+        activate S
+        
+        S->>R: findByUsername(username)
+        activate R
+        R->>DB: SELECT * FROM users WHERE username = ?
+        DB-->>R: User Data (bao gồm Hashed Password)
+        deactivate R
+        
+        S->>S: Verify Password (BCrypt.check())
+        
+        alt Xác thực thành công
+            S->>S: Khởi tạo Session/JWT
+            S-->>C: UserResponseDTO (Success)
+            C-->>JS: 200 OK (JSON + User Info)
+            JS->>U: Hiển thị thông báo thành công & Chuyển trang
+        else Sai mật khẩu hoặc tài khoản
+            S-->>C: Authentication Exception
+            C-->>JS: 401 Unauthorized (JSON Error)
+            JS->>U: Hiển thị: "Sai tài khoản hoặc mật khẩu"
+        end
+        deactivate S
+    end
+    deactivate C
+
+    Note over JS, DB: Mọi lỗi hệ thống (DB Down) sẽ trả về 500 Internal Server Error
