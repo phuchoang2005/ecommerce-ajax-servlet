@@ -6,7 +6,8 @@ services:
       - "8080:8080"
     volumes:
       - ./target/docker-servlet:/usr/local/tomcat/webapps/ROOT
-    restart: unless-stopped
+      - ./logs:/usr/local/tomcat/logs
+    restart: no
   mysql:
     image: mysql:8.0
     container_name: mysql-dev

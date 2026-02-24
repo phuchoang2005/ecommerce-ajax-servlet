@@ -16,12 +16,5 @@
     <p id="result"></p>
 
     <script src="scriptLogin.js"></script>
-
-    <%@ page isErrorPage="true" %>
-    <% if (exception != null){ %>
-    <pre>
-        <%= exception %>
-    </pre>
-    <% } %>
   </body>
 </html>

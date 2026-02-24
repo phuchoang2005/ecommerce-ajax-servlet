@@ -37,7 +37,7 @@ Chào mừng bạn đến với kho tài liệu kỹ thuật của dự án **Lo
 
 * **Back-end:** Java Servlet, JDBC.
 * **Front-end:** HTML/CSS, JavaScript (Fetch API/Ajax).
-* **Database:** MySQL/PostgreSQL.
+* **Database:** MySQL.
 * **Data Format:** JSON (Standardized).
 * **Documentation:** Markdown, OpenAPI 3.0, Mermaid.js.
 
