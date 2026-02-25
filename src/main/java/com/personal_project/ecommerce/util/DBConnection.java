@@ -1,42 +1,47 @@
 package com.personal_project.ecommerce.util;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    // 1. Khai báo Logger theo chuẩn SLF4J
     private static final Logger logger = LoggerFactory.getLogger(DBConnection.class);
+    private static final HikariDataSource dataSource;
 
-    // Không cần khối static để cấu hình FileHandler ở đây nữa.
-    // Việc ghi log ra file sẽ được cấu hình trong file logback.xml hoặc log4j2.xml
+    static {
+        try {
+            HikariConfig config = new HikariConfig();
+            // Cấu hình cơ bản
+            config.setJdbcUrl("jdbc:mysql://mysql:3306/ecommerce?useUnicode=true&characterEncoding=UTF-8");
+            config.setUsername("root");
+            config.setPassword("root123");
+            config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+
+            // Cấu hình tối ưu hóa HikariCP (Chuẩn công nghiệp)
+            config.setMaximumPoolSize(10); // Tối đa 10 kết nối trong hồ
+            config.setMinimumIdle(5);      // Luôn giữ ít nhất 5 kết nối rảnh
+            config.setIdleTimeout(300000); // 5 phút
+            config.setConnectionTimeout(20000); // Đợi tối đa 20s để lấy kết nối
+
+            // Các tùy chỉnh hiệu năng cho MySQL
+            config.addDataSourceProperty("cachePrepStmts", "true");
+            config.addDataSourceProperty("prepStmtCacheSize", "250");
+            config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+            dataSource = new HikariDataSource(config);
+            logger.info("HikariCP DataSource đã được khởi tạo thành công.");
+        } catch (Exception e) {
+            logger.error("Không thể khởi tạo HikariCP DataSource", e);
+            throw new RuntimeException("Lỗi cấu hình Database", e);
+        }
+    }
 
     public static Connection getConnection() throws SQLException {
-        // Thông tin kết nối (Trong thực tế nên đưa vào file .properties hoặc environment variables)
-        String url = "jdbc:mysql://mysql:3306/ecommerce?useUnicode=true&characterEncoding=UTF-8";
-        String user = "root";
-        String pass = "root123";
-
-        try {
-            logger.debug("Đang cố gắng kết nối đến Database: {}", url);
-
-            // Từ JDBC 4.0 trở đi, Class.forName là không bắt buộc nhưng vẫn có thể giữ để đảm bảo
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            Connection conn = DriverManager.getConnection(url, user, pass);
-
-            logger.info("Kết nối Database thành công.");
-            return conn;
-
-        } catch (ClassNotFoundException | SQLException e) {
-            // 2. Log lỗi theo chuẩn chuyên nghiệp
-            // SLF4J tự động xử lý StackTrace nếu bạn truyền đối tượng Exception làm tham số cuối cùng
-            logger.error("Lỗi kết nối Database tại URL: {}. Chi tiết lỗi: {}", url, e.getMessage(), e);
-
-            // Re-throw exception để tầng Service có thể xử lý
-            throw new SQLException("Không thể kết nối database: " + e.getMessage(), e);
-        }
+        // Mượn một kết nối từ Pool thay vì tạo mới
+        return dataSource.getConnection();
     }
 }
