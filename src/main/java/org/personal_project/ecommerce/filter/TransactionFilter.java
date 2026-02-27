@@ -1,4 +1,4 @@
-package org.personal_project.ecommerce.security;
+package org.personal_project.ecommerce.filter;
 
 import org.personal_project.ecommerce.util.DBConnection;
 import org.personal_project.ecommerce.util.DBContext;

@@ -1,17 +1,14 @@
-package com.personal_project.ecommerce.exceptions;
+package org.personal_project.ecommerce.exceptions;
 
-import com.personal_project.ecommerce.dto.ApiErrorResponse;
 
-public abstract class BaseException extends RuntimeException {
-    protected ApiErrorResponse apiErrorResponse;
-    public BaseException(int statusCode, String error, String message, String path){
+public class BaseException extends RuntimeException {
+    private final int statusCode;
+    private final String error;
+    public BaseException(int statusCode, String error, String message){
         super(message);
-        this.apiErrorResponse = new ApiErrorResponse(
-                statusCode,
-                error,
-                message,
-                path
-        );
+        this.statusCode = statusCode;
+        this.error = error;
     }
-    public abstract ApiErrorResponse getApiErrorResponse();
+    public int getStatusCode(){return this.statusCode;}
+    public String getError(){return this.error;}
 }

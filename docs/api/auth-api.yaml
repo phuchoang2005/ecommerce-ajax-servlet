@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://localhost:8080/my-app/api/v1
+  - url: http://localhost:8080/
     description: Local development server
 
 paths:
@@ -108,4 +108,4 @@ components:
           example: "Invalid username or password"
         path:
           type: string
-          example: "/api/v1/auth/login"
+          example: "/auth/login"

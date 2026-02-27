@@ -1,4 +1,4 @@
-package org.personal_project.ecommerce.security;
+package org.personal_project.ecommerce.filter;
 
 import com.google.gson.Gson;
 import org.personal_project.ecommerce.dto.ApiResponse;

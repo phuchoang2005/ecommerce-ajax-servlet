@@ -1,4 +1,4 @@
-package com.personal_project.ecommerce.util;
+package org.personal_project.ecommerce.util;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

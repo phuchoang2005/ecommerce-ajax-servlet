@@ -1,17 +1,14 @@
-package com.personal_project.ecommerce.exceptions;
+package org.personal_project.ecommerce.exceptions;
 
-import com.personal_project.ecommerce.dto.ApiErrorResponse;
+import org.personal_project.ecommerce.dto.ApiErrorResponse;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class AuthenticationException extends BaseException {
-    public AuthenticationException(String message, String path){
+    public AuthenticationException(String message){
         super(
                 HttpServletResponse.SC_UNAUTHORIZED,
                 "Unauthorized",
-                message,
-                path
+                message
         );
     }
-    @Override
-    public ApiErrorResponse getApiErrorResponse(){return this.apiErrorResponse;}
 }

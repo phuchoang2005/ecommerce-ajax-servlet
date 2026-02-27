@@ -1,4 +1,4 @@
-package com.personal_project.ecommerce.dto;
+package org.personal_project.ecommerce.dto;
 
 public class LoginRequestDTO {
     private String username;

@@ -1,4 +1,4 @@
-package org.personal_project.ecommerce.security;
+package org.personal_project.ecommerce.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
