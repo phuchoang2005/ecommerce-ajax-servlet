@@ -1,6 +1,6 @@
 package org.personal_project.ecommerce.dto;
 
-public class RegisterRequest {
+public class RegisterRequestDTO {
     private String username;
     private String fullname;
     private String email;
@@ -8,7 +8,7 @@ public class RegisterRequest {
     private String address;
     private String phone;
 
-    public RegisterRequest(String username, String fullname, String email, String password, String address, String phone){
+    public RegisterRequestDTO(String username, String fullname, String email, String password, String address, String phone){
         this.username = username;
         this.fullname = fullname;
         this.email = email;

@@ -1,6 +1,8 @@
 package org.personal_project.ecommerce.dao;
 
 import org.personal_project.ecommerce.dto.UserAuthDTO;
+import org.personal_project.ecommerce.enums.DuplicateField;
+import org.personal_project.ecommerce.exceptions.DuplicateEntryException;
 import org.personal_project.ecommerce.exceptions.QueryException;
 import org.personal_project.ecommerce.util.DBContext;
 import org.slf4j.Logger;
@@ -42,6 +44,31 @@ public class UserDAO {
             }
         }catch (SQLException e){
             throw new QueryException("Error when trying to make prepared statement");
+        }
+        return Optional.empty();
+    }
+    public Optional<Integer> insertUser(String username, String password){
+        Connection conn = DBContext.getConnection();
+        String sql = "insert into users (username, password) values (?,?)";
+
+        try(PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
+            ps.setString(1, username);
+            ps.setString(1, password);
+            ps.executeUpdate();
+            try(ResultSet rs = ps.getGeneratedKeys()){
+                if (rs.next()){
+                    return Optional.of(rs.getInt(1));
+                }
+            }catch(SQLException e){
+                throw new QueryException(e.getMessage());
+            }
+        }catch(SQLException e){
+            if (e.getErrorCode() == 1062){
+                DuplicateField field = DuplicateField.fromErrorMessage(e.getMessage());
+                if (field != null){
+                    throw new DuplicateEntryException(field.getFriendlyName() + "existed");
+                }
+            }
         }
         return Optional.empty();
     }

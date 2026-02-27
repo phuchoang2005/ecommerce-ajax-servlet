@@ -18,10 +18,9 @@ public class AuthService {
         String username = loginRequestDTO.getUserName();
         String rawPassword = loginRequestDTO.getPassword();
 
-        return authRepository.getAuthInfo(username)
+        return Optional.of(authRepository.getAuthInfo(username)
                 .filter(user -> BCrypt.checkpw(rawPassword, user.getHashedPassword()))
                 .map(user -> new LoginResponseDTO(user.getUserId(), user.getRole(), username))
-                .map(Optional::ofNullable)
-                .orElseThrow(() -> new AuthenticationException("Username or Password invalid"));
+                .orElseThrow(() -> new AuthenticationException("Username or Password invalid")));
     }
 }

@@ -24,7 +24,7 @@ public class LoginServlet extends BaseServlet{
 
         LoginResponseDTO loginResponseDTO = authService.getAuthInfoResponse(loginRequestDTO).orElseThrow(() -> new AuthenticationException("Login Fail"));
 
-        sendSuccess(response, "Login Successfull", loginRequestDTO);
+        sendSuccess(response, "Login Successful", loginRequestDTO);
 
         SessionUtils.refreshSession(request, loginRequestDTO.getUserName());
     }

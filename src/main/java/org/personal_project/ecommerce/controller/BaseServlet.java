@@ -21,7 +21,6 @@ public abstract class BaseServlet extends HttpServlet{
                 throw new ValidationException("Missing information");
             }
         }
-
     }
     protected void sendSuccess(HttpServletResponse response, String message, Object object){
         try{
