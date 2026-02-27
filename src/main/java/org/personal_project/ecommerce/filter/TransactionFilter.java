@@ -1,5 +1,6 @@
 package org.personal_project.ecommerce.filter;
 
+import jakarta.servlet.annotation.WebFilter;
 import org.personal_project.ecommerce.util.DBConnection;
 import org.personal_project.ecommerce.util.DBContext;
 import jakarta.servlet.*;
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-
+@WebFilter("/*")
 public class TransactionFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(TransactionFilter.class);
     @Override

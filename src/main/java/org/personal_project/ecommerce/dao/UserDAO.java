@@ -15,23 +15,33 @@ import java.util.Optional;
 public class UserDAO {
     private static final Logger logger = LoggerFactory.getLogger(UserDAO.class);
 
-    public Optional<UserAuthDTO> findAuthInforByUsername(String username){
-        String sql = "SELECT userId, password,role FROM users WHERE username = ?";
+    public Optional<UserAuthDTO> findAuthInfoByUsername(String username){
+        String sql = "SELECT user_id, password,role FROM users WHERE username = ?";
         Connection conn = DBContext.getConnection();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            logger.info("Successful created prepared statement");
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
+                logger.info("Result set created successfully");
                 if (rs.next()) {
                     logger.info("Querying authentication Information");
+                    String user_id = rs.getString("user_id");
+                    logger.info("Querying user_id successfully");
+                    String role = rs.getString("role");
+                    logger.info("Querying role successfully");
+                    String password = rs.getString("password");
+                    logger.info("Querying password successfully");
                     return Optional.of(new UserAuthDTO(
-                            rs.getString("userId"),
-                            rs.getString("role"),
-                            rs.getString("password")
+                            user_id,
+                            role,
+                            password
                     ));
                 }
+            }catch(SQLException e){
+                throw new QueryException("Error when running ResultSet " + e.getMessage());
             }
         }catch (SQLException e){
-            throw new QueryException("Error when quering userId and role");
+            throw new QueryException("Error when trying to make prepared statement");
         }
         return Optional.empty();
     }

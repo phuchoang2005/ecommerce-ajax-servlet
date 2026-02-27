@@ -12,23 +12,39 @@ cursor.execute("use ecommerce_new")
 
 sql = """
 -- 1. Bảng Users: Chứa thông tin đăng nhập và phân quyền
+-- 1. Bảng Users (Xác thực): Tập trung vào thông tin đăng nhập
 CREATE TABLE IF NOT EXISTS users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
+    username VARCHAR(50) NOT NULL, -- Bỏ UNIQUE ở đây để xử lý đồng bộ qua Index bên dưới
     password VARCHAR(255) NOT NULL,
     role ENUM('ADMIN', 'USER') DEFAULT 'USER',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    -- Ràng buộc duy nhất cho username
+    CONSTRAINT uk_username UNIQUE (username)
 );
 
--- 2. Bảng Profiles (Khách hàng): Chứa thông tin cá nhân, liên kết với users
+-- 2. Bảng Profiles (Thông tin cá nhân): Đảm bảo Email và Phone không bị trùng
 CREATE TABLE IF NOT EXISTS profiles (
     profile_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT UNIQUE,
+    user_id INT NOT NULL,
     full_name VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
     email VARCHAR(100),
     address VARCHAR(255),
+
+    -- THAY ĐỔI QUAN TRỌNG:
+    -- 1. Đảm bảo 1 user chỉ có 1 profile
+    CONSTRAINT uk_profile_user_id UNIQUE (user_id),
+
+    -- 2. Đảm bảo Email là duy nhất (Rất quan trọng cho eCommerce)
+    CONSTRAINT uk_profile_email UNIQUE (email),
+
+    -- 3. Đảm bảo Số điện thoại là duy nhất (Tùy chọn, nhưng nên có)
+    CONSTRAINT uk_profile_phone UNIQUE (phone),
+
+    -- Khóa ngoại
     CONSTRAINT fk_profile_user
         FOREIGN KEY (user_id) REFERENCES users(user_id)
         ON DELETE CASCADE

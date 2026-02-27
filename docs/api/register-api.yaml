@@ -1,0 +1,124 @@
+openapi: 3.0.3
+info:
+  title: E-commerce API
+  description: Tài liệu API cho hệ thống thương mại điện tử
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/
+    description: Local server
+tags:
+  - name: Auth
+    description: Các API liên quan đến xác thực và quản lý tài khoản
+
+paths:
+  /auth/register:
+    post:
+      summary: Đăng ký tài khoản người dùng mới
+      description: Nhận thông tin người dùng và tạo tài khoản mới trên hệ thống thương mại điện tử.
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Đăng ký thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        '400':
+          description: Dữ liệu đầu vào không hợp lệ (Validation Error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Mật khẩu phải chứa ít nhất 8 ký tự"
+                code: "VALIDATION_ERROR"
+        '409':
+          description: Xung đột dữ liệu (Email hoặc số điện thoại đã tồn tại)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Email này đã được sử dụng"
+                code: "EMAIL_ALREADY_EXISTS"
+        '500':
+          description: Lỗi máy chủ (Internal Server Error)
+
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - fullName
+        - username
+      properties:
+        username:
+          type: string
+          description: Username trên hệ thống của người dùng
+        fullName:
+          type: string
+          description: Họ và tên đầy đủ của người dùng
+          example: "Nguyễn Văn A"
+        email:
+          type: string
+          format: email
+          description: Địa chỉ email dùng để đăng nhập
+          example: "nguyenvana@example.com"
+        password:
+          type: string
+          format: password
+          description: Mật khẩu (yêu cầu độ bảo mật cao)
+          example: "StrongP@ssw0rd!"
+        address:
+          type: string
+          description: Nơi ở
+        phone:
+          type: string
+          description: Số điện thoại liên hệ
+          example: "0987654321"
+
+    RegisterResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          description: Thời gian hoàn thành yêu cầu
+        message:
+          type: string
+          example: "Đăng ký tài khoản thành công"
+        username:
+          type: string
+          format: text
+          example: "bosshp2000"
+        email:
+          type: string
+          format: email
+          example: "nguyenvana@example.com"
+
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          description: Thời gian gây ra lỗi
+        status:
+          type: int
+          description: Mã trạng thái lỗi
+        message:
+          type: string
+          description: Thông báo lỗi chi tiết
+        error:
+          type: string
+          description: Trạng thái lỗi
+        path:
+          type: string
+          description: Đường dẫn lỗi

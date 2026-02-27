@@ -16,7 +16,7 @@ public class DBConnection {
         try {
             HikariConfig config = new HikariConfig();
             // Cấu hình cơ bản
-            config.setJdbcUrl("jdbc:mysql://mysql:3306/ecommerce?useUnicode=true&characterEncoding=UTF-8");
+            config.setJdbcUrl("jdbc:mysql://mysql:3306/ecommerce_new?useUnicode=true&characterEncoding=UTF-8");
             config.setUsername("root");
             config.setPassword("root123");
             config.setDriverClassName("com.mysql.cj.jdbc.Driver");

@@ -18,7 +18,7 @@ public class AuthService {
         String username = loginRequestDTO.getUserName();
         String rawPassword = loginRequestDTO.getPassword();
 
-        return authRepository.getAuthInfor(username)
+        return authRepository.getAuthInfo(username)
                 .filter(user -> BCrypt.checkpw(rawPassword, user.getHashedPassword()))
                 .map(user -> new LoginResponseDTO(user.getUserId(), user.getRole(), username))
                 .map(Optional::ofNullable)

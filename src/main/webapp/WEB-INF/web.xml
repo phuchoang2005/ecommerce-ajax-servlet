@@ -32,7 +32,6 @@
     <filter-mapping>
         <filter-name>AuthenticationFilter</filter-name>
         <url-pattern>/payment</url-pattern>
-        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <session-config>

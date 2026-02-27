@@ -50,7 +50,7 @@ Chào mừng bạn đến với kho tài liệu kỹ thuật của dự án **Lo
 1. **[Authentication Requirements](./business-logic/authentication-requirement.md):** Hiểu về yêu cầu nghiệp vụ, User Stories và các tiêu chí nghiệm thu.
 2. **[Database Design](./database/database-design.md):** Xem cấu trúc các bảng và cách dữ liệu được liên kết để phục vụ logic đăng nhập.
 3. **[Sequence Diagram](./architecture/login-sequence-diagram.mermaid):** Cái nhìn trực quan về luồng đi của dữ liệu từ Browser qua các lớp (Layer) xử lý trong Java.
-4. **[API Specification](./api/auth-api.yaml):** Chi tiết về các Endpoint, cấu trúc JSON Request/Response và các mã lỗi HTTP.
+4. **[API Specification](api/auth-api.yaml):** Chi tiết về các Endpoint, cấu trúc JSON Request/Response và các mã lỗi HTTP.
 5. **[Logging Standard](./logging/logging-standard.md):** Cách hệ thống ghi lại lịch sử hoạt động để bảo trì và xử lý sự cố.
 
 ---
