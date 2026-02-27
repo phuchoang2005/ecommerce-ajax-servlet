@@ -1,4 +1,4 @@
-package com.personal_project.ecommerce.security;
+package org.personal_project.ecommerce.security;
 
 import jakarta.servlet.*;
 import org.slf4j.MDC;

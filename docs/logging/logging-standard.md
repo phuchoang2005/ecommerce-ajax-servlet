@@ -90,7 +90,3 @@ Khi bắt lỗi trong khối `catch`, luôn ghi kèm theo đối tượng Except
 | Lỗi Database | ERROR | `Database error during authentication for user: {username}. StackTrace: ...` |
 
 ---
-
-Tài liệu này sẽ giúp bạn và nhóm làm việc thống nhất về cách "giao tiếp" với hệ thống thông qua nhật ký.
-
-**Tất cả các file tài liệu thiết kế đã sẵn sàng! Bây giờ, bạn có muốn tôi hướng dẫn refactor đoạn mã `UserLoginRepository` để sử dụng Logging và chuẩn bảo mật không?**

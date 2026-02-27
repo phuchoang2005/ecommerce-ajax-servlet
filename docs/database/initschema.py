@@ -7,83 +7,96 @@ conn = mysql.connector.connect(
 )
 
 cursor = conn.cursor()
-
-cursor.execute("CREATE DATABASE IF NOT EXISTS ecommerce")
-cursor.execute("use ecommerce")
+cursor.execute("CREATE DATABASE IF NOT EXISTS ecommerce_new")
+cursor.execute("use ecommerce_new")
 
 sql = """
-
+-- 1. Bảng Users: Chứa thông tin đăng nhập và phân quyền
 CREATE TABLE IF NOT EXISTS users (
-    username VARCHAR(50) PRIMARY KEY,
-    password VARCHAR(255) NOT NULL
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('ADMIN', 'USER') DEFAULT 'USER',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS khachhang (
-    makh INT AUTO_INCREMENT PRIMARY KEY,
-    hoten VARCHAR(100) NOT NULL,
-    sdt VARCHAR(20),
+-- 2. Bảng Profiles (Khách hàng): Chứa thông tin cá nhân, liên kết với users
+CREATE TABLE IF NOT EXISTS profiles (
+    profile_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNIQUE,
+    full_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(20),
     email VARCHAR(100),
-    diachi VARCHAR(255)
+    address VARCHAR(255),
+    CONSTRAINT fk_profile_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+        ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS loaisp (
-    maloai INT AUTO_INCREMENT PRIMARY KEY,
-    tenloai VARCHAR(100) NOT NULL
+-- 3. Bảng Categories (Loại sản phẩm)
+CREATE TABLE IF NOT EXISTS categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS sanpham (
-    masp INT AUTO_INCREMENT PRIMARY KEY,
-    tensp VARCHAR(150) NOT NULL,
-    donvitinh VARCHAR(50),
-    nuocsx VARCHAR(100),
-    gia DECIMAL(12,2) NOT NULL,
-    hinhanh VARCHAR(255),
-    maloai INT,
-    CONSTRAINT fk_sanpham_loaisp
-        FOREIGN KEY (maloai)
-        REFERENCES loaisp(maloai)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
+-- 4. Bảng Products (Sản phẩm)
+CREATE TABLE IF NOT EXISTS products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(150) NOT NULL,
+    unit VARCHAR(50),
+    price DECIMAL(12,2) NOT NULL,
+    stock INT DEFAULT 0,
+    image_url VARCHAR(255),
+    category_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_product_category
+        FOREIGN KEY (category_id) REFERENCES categories(category_id)
+        ON UPDATE CASCADE ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS hoadon (
-    sohd INT AUTO_INCREMENT PRIMARY KEY,
-    ngayhoadon DATETIME DEFAULT CURRENT_TIMESTAMP,
-    makh INT,
-    thanhtoan VARCHAR(50),
-    CONSTRAINT fk_hoadon_khachhang
-        FOREIGN KEY (makh)
-        REFERENCES khachhang(makh)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
+-- 5. Bảng Orders (Hóa đơn)
+CREATE TABLE IF NOT EXISTS orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    total_amount DECIMAL(12,2),
+    status ENUM('PENDING', 'PAID', 'SHIPPING', 'DELIVERED', 'CANCELLED') DEFAULT 'PENDING',
+    payment_method VARCHAR(50),
+    CONSTRAINT fk_order_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
-CREATE TABLE IF NOT EXISTS cthd (
-    sohd INT,
-    masp INT,
-    soluong INT NOT NULL,
-    donggia DECIMAL(12,2) NOT NULL,
-    PRIMARY KEY (sohd, masp),
-    CONSTRAINT fk_cthd_hoadon
-        FOREIGN KEY (sohd)
-        REFERENCES hoadon(sohd)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    CONSTRAINT fk_cthd_sanpham
-        FOREIGN KEY (masp)
-        REFERENCES sanpham(masp)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
+-- 6. Bảng OrderDetails (Chi tiết hóa đơn)
+CREATE TABLE IF NOT EXISTS order_details (
+    order_id INT,
+    product_id INT,
+    quantity INT NOT NULL,
+    unit_price DECIMAL(12,2) NOT NULL,
+    PRIMARY KEY (order_id, product_id),
+    CONSTRAINT fk_detail_order
+        FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
+    CONSTRAINT fk_detail_product
+        FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
-
 """
 
+# Thực thi lệnh tạo bảng
 for statement in sql.split(";"):
     if statement.strip():
         cursor.execute(statement)
+
+# Chèn dữ liệu mẫu để test API
+seed_data = [
+    "INSERT IGNORE INTO users (username, password, role) VALUES ('admin_user', 'P@ssw0rd123', 'ADMIN')",
+    "INSERT IGNORE INTO users (username, password, role) VALUES ('customer01', 'password123', 'USER')"
+]
+for data in seed_data:
+    cursor.execute(data)
 
 conn.commit()
 cursor.close()
 conn.close()
 
-print("Created all tables successfully.")
+print("Database 'ecommerce' đã được cập nhật chuẩn OpenAPI & Phân quyền!")

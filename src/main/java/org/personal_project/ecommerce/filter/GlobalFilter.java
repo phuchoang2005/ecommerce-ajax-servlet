@@ -1,7 +1,6 @@
-package com.personal_project.ecommerce.security;
+package org.personal_project.ecommerce.security;
 
 import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;

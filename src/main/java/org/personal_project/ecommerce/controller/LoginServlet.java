@@ -1,8 +1,10 @@
 package com.personal_project.ecommerce.controller;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.personal_project.ecommerce.dto.ApiResponse;
 import com.personal_project.ecommerce.dto.LoginRequestDTO;
+import com.personal_project.ecommerce.dto.LoginResponseDTO;
+import com.personal_project.ecommerce.exceptions.AuthenticationException;
+import com.personal_project.ecommerce.exceptions.ValidationException;
 import com.personal_project.ecommerce.service.AuthService;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -12,50 +14,51 @@ import org.slf4j.MDC;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet("/auth/login")
 public class LoginServlet extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(LoginServlet.class);
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException{
-        try{
-            LoginRequestDTO loginRequestDTO = getLoginRequest(request);
+        LoginRequestDTO loginRequestDTO = getLoginRequest(request);
 
-            MDC.put("username", loginRequestDTO.getUserName());
+        MDC.put("username", loginRequestDTO.getUserName());
 
-            if (!checkMissingInformation(loginRequestDTO)){
-                sendResponse(response, new ApiResponse<>(HttpServletResponse.SC_BAD_REQUEST, "Missing information for login", null));
-                return;
-            }
+        checkMissingInformation(request, loginRequestDTO);
 
+        try {
             checkAuthenticate(request, response, loginRequestDTO);
-        }catch(JsonSyntaxException e){
-            logger.error("JSON invalid", e);
-            sendResponse(response, new ApiResponse<>(HttpServletResponse.SC_BAD_REQUEST, "JSON invalid", null));
-        }catch (Exception e){
-            sendResponse(response, new ApiResponse<>(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error System", null));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private void checkAuthenticate(HttpServletRequest request, HttpServletResponse response, LoginRequestDTO loginRequestDTO) throws IOException{
+    private void checkAuthenticate(HttpServletRequest request, HttpServletResponse response, LoginRequestDTO loginRequestDTO) throws SQLException{
         AuthService authService = new AuthService();
-        if (authService.authenticate(loginRequestDTO)){
-            setNewSession(request, loginRequestDTO.getUserName());
-            logger.info("Loging sucessfully by {}", loginRequestDTO.getUserName());
-            sendResponse(response, new ApiResponse<>(HttpServletResponse.SC_OK, "Login Sucessful", loginRequestDTO.getUserName()));
-        }else{
-            logger.warn("Wrong credentials by User: {}", loginRequestDTO.getUserName());
-            sendResponse(response, new ApiResponse<>(HttpServletResponse.SC_UNAUTHORIZED, "Wrong username or password", null));
+        try{
+            authService.getResponse(loginRequestDTO)
+                    .ifPresentOrElse(loginResponseDTO -> {
+                        setNewSession(request, loginRequestDTO.getUserName());
+                        ApiResponse<LoginResponseDTO> apiResponse = new ApiResponse<>(HttpServletResponse.SC_OK, "Login Sucessfull", loginResponseDTO);
+                        try {
+                            sendResponse(response, apiResponse);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, () -> {
+                        throw new AuthenticationException("Username or Password not found", request.getRequestURI());
+                    });
+        }catch(SQLException e){
+            throw new RuntimeException("Error Query", e);
         }
     }
-    private boolean checkMissingInformation(LoginRequestDTO loginRequestDTO){
+    private void checkMissingInformation(HttpServletRequest request, LoginRequestDTO loginRequestDTO) throws IOException{
         if (loginRequestDTO.getUserName() == null || loginRequestDTO.getPassword() == null){
-            logger.warn("Login Fail: Missing inforamtion (bad request)");
-            return false;
+            throw new ValidationException("Missing information", request.getRequestURI());
         }
-        return true;
     }
-    private void sendResponse(HttpServletResponse response, ApiResponse<Object> apiResponse) throws IOException {
+    private void sendResponse(HttpServletResponse response, ApiResponse<LoginResponseDTO> apiResponse) throws IOException {
         response.setStatus(apiResponse.getStatus());
         Gson gson = new Gson();
         response.getWriter().write(gson.toJson(apiResponse));

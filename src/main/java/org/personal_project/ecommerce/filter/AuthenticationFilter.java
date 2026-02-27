@@ -1,7 +1,7 @@
-package com.personal_project.ecommerce.security;
+package org.personal_project.ecommerce.security;
 
 import com.google.gson.Gson;
-import com.personal_project.ecommerce.dto.ApiResponse;
+import org.personal_project.ecommerce.dto.ApiResponse;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
