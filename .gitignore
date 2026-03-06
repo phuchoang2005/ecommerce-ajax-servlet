@@ -5,6 +5,7 @@
 Thumbs.db
 *.log
 *.sql
+*.txt
 
 ########################
 # Java / Maven
