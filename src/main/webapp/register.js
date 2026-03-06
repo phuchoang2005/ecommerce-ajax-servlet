@@ -24,12 +24,12 @@ document
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      const {message, data} = await response.json();
 
       if (response.ok) {
         // Xử lý RegisterResponse (200 hoặc 201)
         showAlert(
-          `Thành công: ${data.message}. Chào mừng ${data.username}!`,
+          `Thành công: ${message}. Chào mừng ${data.username}!`,
           "success",
         );
         form.reset();

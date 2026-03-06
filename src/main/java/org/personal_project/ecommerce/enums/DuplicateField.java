@@ -1,9 +1,9 @@
 package org.personal_project.ecommerce.enums;
 
 public enum DuplicateField {
-    USERNAME("uk_username", "Tên đăng nhập", "username"),
-    EMAIL("uk_profile_email", "Địa chỉ email", "email"),
-    PHONE("uk_profile_phone", "Số điện thoại", "phone");
+    USERNAME("uk_username", "Username", "username"),
+    EMAIL("uk_profile_email", "Email", "email"),
+    PHONE("uk_profile_phone", "Phone", "phone");
 
     private final String constraintName;
     private final String friendlyName;

@@ -116,7 +116,7 @@ contentType="text/html;charset=UTF-8" language="java" %>
           <label>Họ và tên *</label>
           <input
             type="text"
-            name="fullName"
+            name="fullname"
             required
             placeholder="Nguyễn Văn A"
           />
@@ -156,6 +156,6 @@ contentType="text/html;charset=UTF-8" language="java" %>
         <button type="submit" id="submitBtn">Đăng ký</button>
       </form>
     </div>
-    <Script src="register.js"></Script>
+    <script src="register.js"></script>
   </body>
 </html>

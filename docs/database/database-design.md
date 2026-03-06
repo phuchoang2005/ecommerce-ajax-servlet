@@ -11,8 +11,8 @@
 Sơ đồ dưới đây mô tả mối quan hệ giữa các bảng trong hệ thống quản lý bán hàng:
 
 ``` mermaid
-erDiagram
 
+erDiagram
 USERS ||--|| PROFILES : "has"
 USERS ||--o{ ORDERS : "places"
 CATEGORIES ||--o{ PRODUCTS : "contains"

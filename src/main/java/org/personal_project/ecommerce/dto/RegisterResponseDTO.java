@@ -3,9 +3,11 @@ package org.personal_project.ecommerce.dto;
 import java.time.LocalDateTime;
 
 public class RegisterResponseDTO {
-    private final String timestamp;
-    private final String username;
-    private final String email;
+    private String timestamp;
+    private String username;
+    private String email;
+
+    public RegisterResponseDTO(){}
 
     public RegisterResponseDTO(String username, String email){
         this.timestamp = LocalDateTime.now().toString();

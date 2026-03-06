@@ -5,7 +5,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./target/docker-servlet:/usr/local/tomcat/webapps/ROOT
+      - ./target/docker-servlet.war:/usr/local/tomcat/webapps/ROOT.war
       - ./logs:/usr/local/tomcat/logs
     restart: no
   mysql:

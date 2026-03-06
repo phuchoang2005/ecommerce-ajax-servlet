@@ -10,7 +10,9 @@ import org.personal_project.ecommerce.exceptions.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 public abstract class BaseServlet extends HttpServlet{
     private static final Logger logger = LoggerFactory.getLogger(BaseServlet.class);
@@ -21,6 +23,7 @@ public abstract class BaseServlet extends HttpServlet{
                 throw new ValidationException("Missing information");
             }
         }
+        logger.info("Checking validate sucessful");
     }
     protected void sendSuccess(HttpServletResponse response, String message, Object object){
         try{
@@ -31,12 +34,31 @@ public abstract class BaseServlet extends HttpServlet{
             throw new InputOutputException(e.getMessage());
         }
     }
-    protected <T> T parseJSON(HttpServletRequest request, Class<T> _class) {
-        try {
-            logger.info("Request sent from: {}", request.getRemoteAddr());
-            return new Gson().fromJson(request.getReader(), _class);
-        }catch(IOException e){
-            throw new InputOutputException("Get JSON Error");
+    protected <T> T parseJSON(HttpServletRequest request, Class<T> clazz) {
+
+    try {
+
+        logger.info("Request from {}", request.getRemoteAddr());
+
+        BufferedReader reader = request.getReader();
+
+        String body = reader.lines().collect(Collectors.joining());
+
+        logger.info("RAW BODY: {}", body);
+
+        T obj = new Gson().fromJson(body, clazz);
+
+        if(obj == null){
+            throw new RuntimeException("JSON body is empty or invalid");
         }
+
+        return obj;
+
+    } catch (IOException e) {
+
+        logger.error("Cannot read JSON", e);
+
+        throw new RuntimeException("JSON parsing error", e);
     }
+}
 }

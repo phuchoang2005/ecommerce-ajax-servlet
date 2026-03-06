@@ -16,5 +16,6 @@ public class SessionUtils {
         }
         HttpSession newSession = request.getSession(true);
         newSession.setAttribute("user", username);
+        logger.info("Create new session for username {} successfully", username);
     }
 }

@@ -49,12 +49,14 @@ public class UserDAO {
     }
     public Optional<Integer> insertUser(String username, String password){
         Connection conn = DBContext.getConnection();
+        logger.info("Create connection done");
         String sql = "insert into users (username, password) values (?,?)";
 
         try(PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
             ps.setString(1, username);
-            ps.setString(1, password);
+            ps.setString(2, password);
             ps.executeUpdate();
+            logger.info("Insert username and password done");
             try(ResultSet rs = ps.getGeneratedKeys()){
                 if (rs.next()){
                     return Optional.of(rs.getInt(1));
@@ -66,7 +68,7 @@ public class UserDAO {
             if (e.getErrorCode() == 1062){
                 DuplicateField field = DuplicateField.fromErrorMessage(e.getMessage());
                 if (field != null){
-                    throw new DuplicateEntryException(field.getFriendlyName() + "existed");
+                    throw new DuplicateEntryException(field.getFriendlyName() + " existed");
                 }
             }
         }

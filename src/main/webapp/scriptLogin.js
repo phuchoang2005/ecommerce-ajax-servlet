@@ -1,32 +1,39 @@
-document.getElementById("loginForm").addEventListener("submit", function (e) {
+const loginForm = document.querySelector("#loginForm");
+const resultDiv = document.querySelector("#result");
+
+loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  const resultDiv = document.getElementById("result");
+  const username = document.querySelector("#username").value.trim();
+  const password = document.querySelector("#password").value;
 
-  // Gửi JSON thay vì Form-urlencoded
-  fetch("/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ username, password }),
-  })
-    .then(async (res) => {
-      const data = await res.json();
-
-      if (res.ok) {
-        // Status 200-299
-        resultDiv.style.color = "green";
-        resultDiv.innerHTML = `${data.message}`;
-        // Redirect sau 1s chẳng hạn: window.location.href = "/dashboard";
-      } else {
-        resultDiv.style.color = "red";
-        resultDiv.innerHTML = `Lỗi (${res.status}): ${data.message}`;
-      }
-    })
-    .catch((err) => {
-      resultDiv.innerHTML = "️Không thể kết nối đến server.";
+  try {
+    const res = await fetch("/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ username, password })
     });
+
+    const { message, data } = await res.json();
+
+    if (!res.ok) {
+      showResult(`Lỗi (${res.status}): ${message}`, "red");
+      return;
+    }
+
+    showResult(`${message}. Chào mừng ${data.username}`, "green");
+
+    // ví dụ redirect
+    // setTimeout(() => location.href = "/dashboard", 1000);
+
+  } catch (err) {
+    showResult("Không thể kết nối đến server.", "red");
+  }
 });
+
+function showResult(message, color) {
+  resultDiv.style.color = color;
+  resultDiv.textContent = message;
+}
