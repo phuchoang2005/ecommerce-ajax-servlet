@@ -24,12 +24,12 @@ document
         body: JSON.stringify(payload),
       });
 
-      const {message, data} = await response.json();
+      const json = await response.json();
 
       if (response.ok) {
         // Xử lý RegisterResponse (200 hoặc 201)
         showAlert(
-          `Thành công: ${message}. Chào mừng ${data.username}!`,
+          `Thành công: ${json.message}. Chào mừng ${json.data.username}!`,
           "success",
         );
         form.reset();
@@ -37,10 +37,10 @@ document
       } else {
         // Xử lý ErrorResponse
         // Theo schema: data.message, data.status, data.error
-        const errorMsg = data.message || "Đăng ký thất bại";
-        showAlert(`Lỗi (${data.status}): ${errorMsg}`, "error");
+        const errorMsg = json.message || "Đăng ký thất bại";
+        showAlert(`Lỗi (${json.status}): ${errorMsg}`, "error");
 
-        console.error(`Error at ${data.path}: ${data.error}`);
+        console.error(`Error at ${json.path}: ${json.error}`);
       }
     } catch (err) {
       showAlert(

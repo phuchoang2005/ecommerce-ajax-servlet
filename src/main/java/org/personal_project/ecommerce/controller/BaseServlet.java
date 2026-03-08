@@ -1,6 +1,8 @@
 package org.personal_project.ecommerce.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -58,7 +60,7 @@ public abstract class BaseServlet extends HttpServlet{
 
         logger.error("Cannot read JSON", e);
 
-        throw new RuntimeException("JSON parsing error", e);
+        throw new RuntimeException("JSON parsing error");
     }
 }
 }

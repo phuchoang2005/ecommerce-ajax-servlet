@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class ProfilesDAO {
     public void insertProfile(RegisterRequestDTO registerRequestDTO, int user_id){
         Connection conn = DBContext.getConnection();
-        String sql = "insert into profiles (user_id, full_name, email, phone, address";
+        String sql = "insert into profiles (user_id, full_name, email, phone, address) values (?,?,?,?,?)";
 
         try(PreparedStatement ps = conn.prepareStatement(sql)){
             ps.setInt(1, user_id);
@@ -27,6 +27,8 @@ public class ProfilesDAO {
                 if (field != null){
                     throw new DuplicateEntryException(field.getFriendlyName() + "existed");
                 }
+            }else{
+                throw new RuntimeException(e.getMessage());
             }
         }
     }

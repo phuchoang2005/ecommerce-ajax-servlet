@@ -33,6 +33,7 @@ public class GlobalExceptionFilter implements Filter {
             case JsonSyntaxException je -> new ApiErrorResponse(HttpServletResponse.SC_BAD_REQUEST,"JSON invalid", je.getMessage(), request.getRequestURI());
             case QueryException qe -> new ApiErrorResponse(qe.getStatusCode(), qe.getError(), qe.getMessage(), request.getRequestURI());
             case InputOutputException ioe -> new ApiErrorResponse(ioe.getStatusCode(), ioe.getError(), ioe.getMessage(), request.getRequestURI());
+            case DuplicateEntryException dee -> new ApiErrorResponse(dee.getStatusCode(), dee.getError(), dee.getMessage(), request.getRequestURI());
             default -> new ApiErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage(), request.getRequestURI());
         };
 
