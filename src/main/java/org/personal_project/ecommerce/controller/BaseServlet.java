@@ -1,7 +1,6 @@
 package org.personal_project.ecommerce.controller;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
 
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;

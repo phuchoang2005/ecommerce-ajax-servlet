@@ -25,7 +25,7 @@ public class ProfilesDAO {
             if (e.getErrorCode() == 1062){
                 DuplicateField field = DuplicateField.fromErrorMessage(e.getMessage());
                 if (field != null){
-                    throw new DuplicateEntryException(field.getFriendlyName() + "existed");
+                    throw new DuplicateEntryException(field.getFriendlyName() + " existed");
                 }
             }else{
                 throw new RuntimeException(e.getMessage());

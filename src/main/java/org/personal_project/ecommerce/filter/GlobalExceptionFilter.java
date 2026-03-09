@@ -26,7 +26,7 @@ public class GlobalExceptionFilter implements Filter {
             handleException(e, req, res);
         }
     }
-    static void handleException(Exception e, HttpServletRequest request, HttpServletResponse response) throws IOException{
+    static void handleException(Throwable e, HttpServletRequest request, HttpServletResponse response) throws IOException{
         ApiErrorResponse apiErrorResponse = switch(e){
             case ValidationException ve -> new ApiErrorResponse(ve.getStatusCode(), ve.getError(),ve.getMessage(), request.getRequestURI());
             case AuthenticationException ae -> new ApiErrorResponse(ae.getStatusCode(), ae.getError(),ae.getMessage(), request.getRequestURI());

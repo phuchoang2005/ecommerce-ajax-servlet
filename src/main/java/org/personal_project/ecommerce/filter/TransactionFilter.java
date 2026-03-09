@@ -16,42 +16,56 @@ import java.sql.SQLException;
 public class TransactionFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(TransactionFilter.class);
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain){
-        Connection conn = null;
-        try{
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
+    Connection conn = null;
+    boolean success = false;
 
-            DBContext.setConnection(conn);
+    try {
+        conn = DBConnection.getConnection();
+        conn.setAutoCommit(false);
 
-            filterChain.doFilter(request, response);
+        DBContext.setConnection(conn);
 
-            conn.commit();
-        }catch(Exception e){
-            if (conn != null){
-                try{
-                    conn.rollback();
-                }catch(Exception ex){
-                    logger.error("Error when rollback", ex);
-                }
-            }
-            logger.error("Error create connection", e);
-            HttpServletRequest req = (HttpServletRequest) request;
-            HttpServletResponse res = (HttpServletResponse) response;
-            ErrorHandler(e, req, res);
-        }finally {
-            DBContext.removeConnection();
-            if (conn != null){
-                try{
-                    conn.close();
-                }catch(SQLException e){
-                    logger.error("Error when close connection", e);
-                }
+        chain.doFilter(request, response);
+
+        success = true;
+
+    } catch (Throwable e) {
+
+        if (conn != null) {
+            try {
+                conn.rollback();
+                logger.error("Transaction rollback", e);
+            } catch (SQLException ex) {
+                logger.error("Rollback failed", ex);
             }
         }
-    }
 
-    private void ErrorHandler(Exception e, HttpServletRequest request, HttpServletResponse response){
+        ErrorHandler(e, (HttpServletRequest) request, (HttpServletResponse) response);
+
+    } finally {
+
+        if (conn != null) {
+            try {
+                if (success) {
+                    conn.commit();
+                }
+            } catch (SQLException e) {
+                logger.error("Commit failed", e);
+            }
+
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                logger.error("Close connection failed", e);
+            }
+        }
+
+        DBContext.removeConnection();
+    }
+}
+
+    private void ErrorHandler(Throwable e, HttpServletRequest request, HttpServletResponse response){
         try{
             if (!response.isCommitted()){
                 GlobalExceptionFilter.handleException(e, request, response);
