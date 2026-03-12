@@ -9,7 +9,7 @@
     <!-- ========================= -->
     <filter>
         <filter-name>GlobalExceptionFilter</filter-name>
-        <filter-class>org.personal_project.ecommerce.GlobalExceptionFilter</filter-class>
+        <filter-class>org.personal_project.ecommerce.filter.GlobalExceptionFilter</filter-class>
     </filter>
 
     <filter-mapping>
@@ -23,7 +23,7 @@
     <!-- ========================= -->
     <filter>
         <filter-name>RequestTracingFilter</filter-name>
-        <filter-class>org.personal_project.ecommerce.RequestTracingFilter</filter-class>
+        <filter-class>org.personal_project.ecommerce.filter.RequestTracingFilter</filter-class>
     </filter>
 
     <filter-mapping>
@@ -37,7 +37,7 @@
     <!-- ========================= -->
     <filter>
         <filter-name>GlobalFilter</filter-name>
-        <filter-class>org.personal_project.ecommerce.GlobalFilter</filter-class>
+        <filter-class>org.personal_project.ecommerce.filter.GlobalFilter</filter-class>
     </filter>
 
     <filter-mapping>
@@ -51,12 +51,12 @@
     <!-- ========================= -->
     <filter>
         <filter-name>AuthenticationFilter</filter-name>
-        <filter-class>org.personal_project.ecommerce.AuthenticationFilter</filter-class>
+        <filter-class>org.personal_project.ecommerce.filter.AuthenticationFilter</filter-class>
     </filter>
 
     <filter-mapping>
         <filter-name>AuthenticationFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/payment</url-pattern>
     </filter-mapping>
 
 
@@ -65,7 +65,7 @@
     <!-- ========================= -->
     <filter>
         <filter-name>TransactionFilter</filter-name>
-        <filter-class>org.personal_project.ecommerce.TransactionFilter</filter-class>
+        <filter-class>org.personal_project.ecommerce.filter.TransactionFilter</filter-class>
     </filter>
 
     <filter-mapping>
