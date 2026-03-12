@@ -4,26 +4,32 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.personal_project.ecommerce.dto.ApiErrorResponse;
 import org.personal_project.ecommerce.exceptions.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebFilter("/*")
 public class GlobalExceptionFilter implements Filter {
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionFilter.class);
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException{
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         try{
+            logger.info(">> BEGIN GLOBAL EXCEPTION FILTER");
             filterChain.doFilter(request, response);
         }catch(Exception e){
+            logger.info("<< CLOSE GLOBAL EXCEPTION FILTER WITH EXCEPTION");
             handleException(e, req, res);
+        }finally{
+            logger.info("<< CLOSE GLOBAL EXCEPTION FILTER WITH HAPPY");
         }
     }
     static void handleException(Throwable e, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -33,12 +39,14 @@ public class GlobalExceptionFilter implements Filter {
             case JsonSyntaxException je -> new ApiErrorResponse(HttpServletResponse.SC_BAD_REQUEST,"JSON invalid", je.getMessage(), request.getRequestURI());
             case QueryException qe -> new ApiErrorResponse(qe.getStatusCode(), qe.getError(), qe.getMessage(), request.getRequestURI());
             case InputOutputException ioe -> new ApiErrorResponse(ioe.getStatusCode(), ioe.getError(), ioe.getMessage(), request.getRequestURI());
-            case DuplicateEntryException dee -> new ApiErrorResponse(dee.getStatusCode(), dee.getError(), dee.getMessage(), request.getRequestURI());
+            case DatabaseException dbe -> new ApiErrorResponse(dbe.getStatusCode(), dbe.getError(), dbe.getMessage(), request.getRequestURI());
             default -> new ApiErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage(), request.getRequestURI());
         };
 
         response.setStatus(apiErrorResponse.getStatus());
         response.getWriter().write(new Gson().toJson(apiErrorResponse));
+
+        logger.info("Response API done");
     }
 }
 

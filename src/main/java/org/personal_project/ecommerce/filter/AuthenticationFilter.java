@@ -1,7 +1,5 @@
 package org.personal_project.ecommerce.filter;
 
-import com.google.gson.Gson;
-import org.personal_project.ecommerce.dto.ApiResponse;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.io.IOException;
+
+import javax.security.sasl.AuthenticationException;
 
 public class AuthenticationFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
@@ -24,13 +24,15 @@ public class AuthenticationFilter implements Filter {
 
         if (isLoggedIn){
             MDC.put("user", session.getAttribute("user").toString());
-            filterChain.doFilter(request, response);
+            try{
+                logger.info(">> BEGIN AUTHENTICATION FILTER");
+                filterChain.doFilter(request, response);
+            }finally{
+                logger.info("<< CLOSE AUTHENTICATION FILTER");
+            }
         }else{
-            logger.warn("Stop Login");
-            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            res.setContentType("application/json");
-            Gson gson = new Gson();
-            res.getWriter().write(gson.toJson(new ApiResponse<>(HttpServletResponse.SC_UNAUTHORIZED, "Please login first", null)));
+            logger.warn("Stop for Login");
+            throw new AuthenticationException("Stop. Login First");
         }
     }
 }

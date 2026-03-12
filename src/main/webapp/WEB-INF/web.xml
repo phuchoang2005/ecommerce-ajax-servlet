@@ -3,21 +3,6 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
          http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
-
-    <!-- ========================= -->
-    <!-- Global Exception Filter   -->
-    <!-- ========================= -->
-    <filter>
-        <filter-name>GlobalExceptionFilter</filter-name>
-        <filter-class>org.personal_project.ecommerce.filter.GlobalExceptionFilter</filter-class>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>GlobalExceptionFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-
     <!-- ========================= -->
     <!-- Request Tracing Filter    -->
     <!-- ========================= -->
@@ -42,6 +27,20 @@
 
     <filter-mapping>
         <filter-name>GlobalFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
+    <!-- ========================= -->
+    <!-- Global Exception Filter   -->
+    <!-- ========================= -->
+    <filter>
+        <filter-name>GlobalExceptionFilter</filter-name>
+        <filter-class>org.personal_project.ecommerce.filter.GlobalExceptionFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>GlobalExceptionFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
@@ -72,5 +71,5 @@
         <filter-name>TransactionFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-
+    
 </web-app>

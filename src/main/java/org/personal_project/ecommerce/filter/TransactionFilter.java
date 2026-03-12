@@ -1,6 +1,6 @@
 package org.personal_project.ecommerce.filter;
 
-import jakarta.servlet.annotation.WebFilter;
+import org.personal_project.ecommerce.exceptions.DatabaseException;
 import org.personal_project.ecommerce.util.DBConnection;
 import org.personal_project.ecommerce.util.DBContext;
 import jakarta.servlet.*;
@@ -24,17 +24,18 @@ public class TransactionFilter implements Filter {
         conn.setAutoCommit(false);
 
         DBContext.setConnection(conn);
-        logger.info("Set connection HikariCP in Transaction Filter");
+        logger.info(">> BEGIN TRANSACTION FILTER");
         chain.doFilter(request, response);
-
         success = true;
 
     } catch (Throwable e) {
 
+        logger.info("<< EXIT TRANSACTION FILTER WITH ROLLBACK PHASE");
         if (conn != null) {
             try {
                 logger.error("Transaction rollback", e);
                 conn.rollback();
+                throw new DatabaseException(e.getMessage());
             } catch (SQLException ex) {
                 logger.error("Rollback failed", ex);
             }
@@ -43,7 +44,7 @@ public class TransactionFilter implements Filter {
         ErrorHandler(e, (HttpServletRequest) request, (HttpServletResponse) response);
 
     } finally {
-
+        logger.info("<< EXIT TRANSACTION FILTER WITH COMMIT PHASE");
         if (conn != null) {
             try {
                 if (success) {

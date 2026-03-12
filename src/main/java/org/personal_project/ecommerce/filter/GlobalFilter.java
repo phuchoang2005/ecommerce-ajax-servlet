@@ -22,7 +22,11 @@ public class GlobalFilter implements Filter {
         res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
         logger.debug("Request: {} and Response: {}", req.getMethod(), req.getRequestURI());
-
-        filterChain.doFilter(request, response);
+        try{
+            logger.info(">> BEGIN GLOBAL FILTER"); 
+            filterChain.doFilter(request, response);
+        }finally{
+            logger.info("<< CLOSE GLOBAL FILTER");
+        }
     }
 }
