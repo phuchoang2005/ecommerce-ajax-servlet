@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-@WebFilter("/*")
 public class TransactionFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(TransactionFilter.class);
     @Override
@@ -25,7 +24,7 @@ public class TransactionFilter implements Filter {
         conn.setAutoCommit(false);
 
         DBContext.setConnection(conn);
-
+        logger.info("Set connection HikariCP in Transaction Filter");
         chain.doFilter(request, response);
 
         success = true;
@@ -34,8 +33,8 @@ public class TransactionFilter implements Filter {
 
         if (conn != null) {
             try {
-                conn.rollback();
                 logger.error("Transaction rollback", e);
+                conn.rollback();
             } catch (SQLException ex) {
                 logger.error("Rollback failed", ex);
             }
@@ -48,20 +47,26 @@ public class TransactionFilter implements Filter {
         if (conn != null) {
             try {
                 if (success) {
+                    logger.info("Commit phase");
                     conn.commit();
+                    logger.info("Commit successfully");
+                    conn.setAutoCommit(true);
                 }
             } catch (SQLException e) {
                 logger.error("Commit failed", e);
             }
 
             try {
+                logger.info("Close connection phase");
                 conn.close();
+                logger.info("Close connection successfully");
             } catch (SQLException e) {
                 logger.error("Close connection failed", e);
             }
         }
-
+        logger.info("Remove connection phase");
         DBContext.removeConnection();
+        logger.info("Remove connection successfully");
     }
 }
 
