@@ -22,6 +22,6 @@ public class FilterDebugUtil {
 
     private static void log(int depth, String msg) {
         String indent = " ".repeat(depth * 4);
-        logger.debug(indent + msg);
+        logger.info(indent + msg);
     }
 }
