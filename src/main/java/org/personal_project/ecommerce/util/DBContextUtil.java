@@ -2,7 +2,7 @@ package org.personal_project.ecommerce.util;
 
 import java.sql.Connection;
 
-public class DBContext {
+public class DBContextUtil {
     private static final ThreadLocal<Connection> connectionHolder = new ThreadLocal<>();
 
     public static Connection getConnection(){

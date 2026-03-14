@@ -4,7 +4,7 @@ import org.personal_project.ecommerce.dto.UserAuthDTO;
 import org.personal_project.ecommerce.enums.DuplicateField;
 import org.personal_project.ecommerce.exceptions.DuplicateEntryException;
 import org.personal_project.ecommerce.exceptions.QueryException;
-import org.personal_project.ecommerce.util.DBContext;
+import org.personal_project.ecommerce.util.DBContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,20 +19,20 @@ public class UserDAO {
 
     public Optional<UserAuthDTO> findAuthInfoByUsername(String username){
         String sql = "SELECT user_id, password,role FROM users WHERE username = ?";
-        Connection conn = DBContext.getConnection();
+        Connection conn = DBContextUtil.getConnection();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            logger.info("Successful created prepared statement");
+            logger.info("[DAO]Successful created prepared statement");
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
-                logger.info("Result set created successfully");
+                logger.info("[DAO]Result set created successfully");
                 if (rs.next()) {
-                    logger.info("Querying authentication Information");
+                    logger.info("[DAO]Querying authentication Information");
                     String user_id = rs.getString("user_id");
-                    logger.info("Querying user_id successfully");
+                    logger.info("[DAO]Querying user_id successfully");
                     String role = rs.getString("role");
-                    logger.info("Querying role successfully");
+                    logger.info("[DAO]Querying role successfully");
                     String password = rs.getString("password");
-                    logger.info("Querying password successfully");
+                    logger.info("[DAO]Querying password successfully");
                     return Optional.of(new UserAuthDTO(
                             user_id,
                             role,
@@ -48,18 +48,19 @@ public class UserDAO {
         return Optional.empty();
     }
     public Optional<Integer> insertUser(String username, String password){
-        Connection conn = DBContext.getConnection();
-        logger.info("Create connection done");
+        Connection conn = DBContextUtil.getConnection();
         String sql = "insert into users (username, password) values (?,?)";
 
         try(PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
+            logger.info("[DAO]Successful created prepared statement");
             ps.setString(1, username);
             ps.setString(2, password);
             ps.executeUpdate();
-            logger.info("Insert username and password done");
             try(ResultSet rs = ps.getGeneratedKeys()){
                 if (rs.next()){
-                    return Optional.of(rs.getInt(1));
+                    Optional<Integer> result = Optional.of(rs.getInt(1));
+                    logger.info("[DAO] Insert username successfully");
+                    return result;
                 }
             }catch(SQLException e){
                 throw new QueryException(e.getMessage());

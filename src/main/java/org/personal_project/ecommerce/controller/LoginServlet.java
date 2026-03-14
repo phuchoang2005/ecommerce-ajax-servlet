@@ -22,9 +22,9 @@ public class LoginServlet extends BaseServlet{
 
         validateRequired(loginRequestDTO.getUserName(), loginRequestDTO.getPassword());
 
-        LoginResponseDTO loginResponseDTO = authService.getAuthInfoResponse(loginRequestDTO).orElseThrow(() -> new AuthenticationException("Login Fail"));
+        LoginResponseDTO loginResponseDTO = authService.checkAuthentication(loginRequestDTO).orElseThrow(() -> new AuthenticationException("Login Fail"));
 
-        sendSuccess(response, "Login Successful", loginResponseDTO);
+        sendResponse(response, 200, "Login Successful", loginResponseDTO);
 
         SessionUtils.refreshSession(request, loginRequestDTO.getUserName());
     }

@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.personal_project.ecommerce.dto.ApiErrorResponse;
 import org.personal_project.ecommerce.exceptions.*;
+import org.personal_project.ecommerce.util.FilterChainTracerUtil;
+import org.personal_project.ecommerce.util.FilterDebugUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,13 +25,18 @@ public class GlobalExceptionFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         try{
-            logger.info(">> BEGIN GLOBAL EXCEPTION FILTER");
+            FilterChainTracerUtil.clear();
+            FilterChainTracerUtil.add("GlobalExceptionFilter");
+            FilterDebugUtil.enter("BEGIN GLOBAL EXCEPTION FILTER");
             filterChain.doFilter(request, response);
         }catch(Exception e){
-            logger.info("<< CLOSE GLOBAL EXCEPTION FILTER WITH EXCEPTION");
+            logger.error(e.getMessage());
+            FilterDebugUtil.exit("CLOSE GLOBAL EXCEPTION FILTER WITH EXCEPTION");
             handleException(e, req, res);
         }finally{
-            logger.info("<< CLOSE GLOBAL EXCEPTION FILTER WITH HAPPY");
+            FilterDebugUtil.exit("CLOSE GLOBAL EXCEPTION FILTER WITH HAPPY");
+            logger.info("[FITLER-CHAIN]: {}", FilterChainTracerUtil.getChain());
+            FilterChainTracerUtil.clear();;
         }
     }
     static void handleException(Throwable e, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -42,11 +49,8 @@ public class GlobalExceptionFilter implements Filter {
             case DatabaseException dbe -> new ApiErrorResponse(dbe.getStatusCode(), dbe.getError(), dbe.getMessage(), request.getRequestURI());
             default -> new ApiErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage(), request.getRequestURI());
         };
-
         response.setStatus(apiErrorResponse.getStatus());
         response.getWriter().write(new Gson().toJson(apiErrorResponse));
-
-        logger.info("Response API done");
     }
 }
 

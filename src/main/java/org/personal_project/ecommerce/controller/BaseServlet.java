@@ -24,13 +24,13 @@ public abstract class BaseServlet extends HttpServlet{
                 throw new ValidationException("Missing information");
             }
         }
-        logger.info("Checking validate sucessful");
+        logger.info("[CONTROLLER] Checking validate sucessful");
     }
-    protected void sendSuccess(HttpServletResponse response, String message, Object object){
+    protected void sendResponse(HttpServletResponse response, int status, String message, Object object){
         try{
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(new Gson().toJson(new ApiResponse<>(HttpServletResponse.SC_OK, message, object)));
-            logger.info("Response sent: Status: {}, Message: {}", HttpServletResponse.SC_OK, message);
+            response.getWriter().write(new Gson().toJson(new ApiResponse<>(status, message, object)));
+            logger.info("[HTTP] Response sent: Status: {}, Message: {}", status, message);
         }catch(IOException e){
             throw new InputOutputException(e.getMessage());
         }
@@ -39,13 +39,11 @@ public abstract class BaseServlet extends HttpServlet{
 
     try {
 
-        logger.info("Request from {}", request.getRemoteAddr());
+        logger.info("[HTTP] Request from {}", request.getRemoteAddr());
 
         BufferedReader reader = request.getReader();
 
         String body = reader.lines().collect(Collectors.joining());
-
-        logger.info("RAW BODY: {}", body);
 
         T obj = new Gson().fromJson(body, clazz);
 
@@ -57,7 +55,7 @@ public abstract class BaseServlet extends HttpServlet{
 
     } catch (IOException e) {
 
-        logger.error("Cannot read JSON", e);
+        logger.error("[CONTROLLER] Cannot read JSON", e);
 
         throw new RuntimeException("JSON parsing error");
     }

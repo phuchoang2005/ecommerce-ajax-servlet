@@ -14,33 +14,37 @@ public class RegisterService {
     private final Logger logger  = LoggerFactory.getLogger(RegisterService.class);
 
     public Optional<RegisterResponseDTO> register(RegisterRequestDTO registerRequestDTO){
-
+        logger.info("[SERVICE] Start Usecase Register");
         String username = registerRequestDTO.getUsername();
-        logger.info("Get username done");
+        logger.info("[SERVICE]Get username done");
         String password = registerRequestDTO.getPassword();
-        logger.info("Get password done");
+        logger.info("[SERVICE]Get password done");
         String email = registerRequestDTO.getEmail();
-        logger.info("Get email done");
+        logger.info("[SERVICE]Get email done");
 
-        logger.info("Beginning Register");
+        logger.info("[SERVICE]Beginning Register");
         
-        logger.info("Beginning hash password");
+        logger.info("[SERVICE]Beginning hash password");
         String hashedPasswordString = PasswordUtil.hash(password);
 
-        logger.info("encoding password done");
+        logger.info("[SERVICE]encoding password done");
         
         Optional<Integer> user_id = registerRepository.saveUser(username, hashedPasswordString);
 
-        logger.info("Save user done");
+        logger.info("[SERVICE]Save user done");
 
         Integer id = user_id.orElseThrow(() -> new RuntimeException("ID not found for create profile"));
 
-        logger.info("Load ID user for signup done");
+        logger.info("[SERVICE]Load ID user for signup done");
 
         registerRepository.insertProfile(registerRequestDTO, id);
 
-        logger.info("Insert Profile done");
+        logger.info("[SERVICE]Insert Profile done");
 
-        return Optional.of(new RegisterResponseDTO(username, email));
+        Optional<RegisterResponseDTO> result = Optional.of(new RegisterResponseDTO(username, email));
+
+        logger.info("[SERVICE] End Usecase Register");
+        
+        return result;
     }
 }

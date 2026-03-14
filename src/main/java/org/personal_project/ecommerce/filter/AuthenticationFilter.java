@@ -4,6 +4,9 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
+import org.personal_project.ecommerce.util.FilterChainTracerUtil;
+import org.personal_project.ecommerce.util.FilterDebugUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -14,6 +17,7 @@ import javax.security.sasl.AuthenticationException;
 
 public class AuthenticationFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException{
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
@@ -25,10 +29,11 @@ public class AuthenticationFilter implements Filter {
         if (isLoggedIn){
             MDC.put("user", session.getAttribute("user").toString());
             try{
-                logger.info(">> BEGIN AUTHENTICATION FILTER");
-                filterChain.doFilter(request, response);
+                FilterDebugUtil.enter("ENTER AUTHENTICATION FILTER");
+                FilterChainTracerUtil.add("AuthencationFilter");
+                filterChain.doFilter(req, res);
             }finally{
-                logger.info("<< CLOSE AUTHENTICATION FILTER");
+                FilterDebugUtil.exit("CLOSE AUTHENTICATION FILTER");
             }
         }else{
             logger.warn("Stop for Login");

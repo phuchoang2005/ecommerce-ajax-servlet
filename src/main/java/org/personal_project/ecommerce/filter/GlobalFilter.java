@@ -3,6 +3,9 @@ package org.personal_project.ecommerce.filter;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.personal_project.ecommerce.util.FilterChainTracerUtil;
+import org.personal_project.ecommerce.util.FilterDebugUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +26,15 @@ public class GlobalFilter implements Filter {
 
         logger.debug("Request: {} and Response: {}", req.getMethod(), req.getRequestURI());
         try{
-            logger.info(">> BEGIN GLOBAL FILTER"); 
+            FilterDebugUtil.enter("BEGIN GLOBAL FILTER");
+            FilterChainTracerUtil.add("GlobalFilter");
             filterChain.doFilter(request, response);
-        }finally{
-            logger.info("<< CLOSE GLOBAL FILTER");
+        }catch(Exception e){
+            logger.error(e.getMessage());
+            FilterDebugUtil.exit("END GLOBAL FILTER WITH EXCEPTION"); 
+        }
+        finally{
+            FilterDebugUtil.exit("END GLOBAL FILTER WITH HAPPY");
         }
     }
 }

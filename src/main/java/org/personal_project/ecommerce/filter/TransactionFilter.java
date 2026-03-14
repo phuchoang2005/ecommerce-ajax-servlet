@@ -1,8 +1,12 @@
 package org.personal_project.ecommerce.filter;
 
 import org.personal_project.ecommerce.exceptions.DatabaseException;
-import org.personal_project.ecommerce.util.DBConnection;
-import org.personal_project.ecommerce.util.DBContext;
+import org.personal_project.ecommerce.exceptions.InputOutputException;
+import org.personal_project.ecommerce.util.DBConnectionutil;
+import org.personal_project.ecommerce.util.DBContextUtil;
+import org.personal_project.ecommerce.util.FilterChainTracerUtil;
+import org.personal_project.ecommerce.util.FilterDebugUtil;
+
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,54 +24,58 @@ public class TransactionFilter implements Filter {
     boolean success = false;
 
     try {
-        conn = DBConnection.getConnection();
+        conn = DBConnectionutil.getConnection();
         conn.setAutoCommit(false);
 
-        DBContext.setConnection(conn);
-        logger.info(">> BEGIN TRANSACTION FILTER");
+        DBContextUtil.setConnection(conn);
+        
+        FilterDebugUtil.enter("ENTER TRANSACTION FILTER");
+        FilterChainTracerUtil.add("TransactionFilter");
         chain.doFilter(request, response);
+
         success = true;
 
     } catch (Throwable e) {
+        FilterDebugUtil.exit("EXIT TRANSACTION FILTER WITH ROLLBACK PHASE");
 
-        logger.info("<< EXIT TRANSACTION FILTER WITH ROLLBACK PHASE");
         if (conn != null) {
             try {
-                logger.error("Transaction rollback", e);
+                logger.info("Transaction Rollback Phase");
                 conn.rollback();
-                throw new DatabaseException(e.getMessage());
+                logger.info("Transaction Rolled back");
             } catch (SQLException ex) {
-                logger.error("Rollback failed", ex);
+                logger.error(ex.getMessage());
+                throw new DatabaseException("Rollback failed");
             }
         }
 
         ErrorHandler(e, (HttpServletRequest) request, (HttpServletResponse) response);
 
     } finally {
-        logger.info("<< EXIT TRANSACTION FILTER WITH COMMIT PHASE");
+        FilterDebugUtil.exit("EXIT TRNSACTION FILTER WITH COMMIT PHASE");
         if (conn != null) {
             try {
                 if (success) {
-                    logger.info("Commit phase");
+                    logger.info("Commit Phase");
                     conn.commit();
-                    logger.info("Commit successfully");
                     conn.setAutoCommit(true);
+                    logger.info("Commit Done");
                 }
             } catch (SQLException e) {
-                logger.error("Commit failed", e);
+                logger.error(e.getMessage());
+                throw new DatabaseException("Commit failed");
             }
 
             try {
-                logger.info("Close connection phase");
+                logger.info("Connection Phase");
                 conn.close();
-                logger.info("Close connection successfully");
+                logger.info("Connection Closed");
             } catch (SQLException e) {
-                logger.error("Close connection failed", e);
+                logger.error(e.getMessage());
+                throw new DatabaseException("Close connection failed");
             }
         }
-        logger.info("Remove connection phase");
-        DBContext.removeConnection();
-        logger.info("Remove connection successfully");
+        DBContextUtil.removeConnection();
     }
 }
 
@@ -77,9 +85,11 @@ public class TransactionFilter implements Filter {
                 GlobalExceptionFilter.handleException(e, request, response);
             }else{
                 logger.error("Response already committed. Can't send JSON file");
+                throw new InputOutputException("Response already committed. Can't send JSON file");
             }
         }catch (IOException eIO){
-            logger.error("IO Error at Database connection", eIO);
+            logger.error(eIO.getMessage());
+            throw new DatabaseException("IO Error at Database connection");
         }
     }
 }

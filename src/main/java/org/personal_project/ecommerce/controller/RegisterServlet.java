@@ -23,7 +23,7 @@ public class RegisterServlet extends BaseServlet{
 
         RegisterResponseDTO registerResponseDTO = registerService.register(registerRequestDTO).orElseThrow(() -> new RuntimeException("Error register"));
 
-        sendSuccess(response, "Register Successful", registerResponseDTO);
+        sendResponse(response, 201, "Register Successful", registerResponseDTO);
 
         SessionUtils.refreshSession(request, registerResponseDTO.getUsername());
     }
