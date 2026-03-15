@@ -10,6 +10,6 @@ public class MDCUtils {
     private final static Logger logger = LoggerFactory.getLogger(MDCUtils.class);
     public static void createMDC(HttpServletRequest request, String username){
         MDC.put("username", username);
-        logger.info("Create MDC key successful");  
+        logger.info("[UTIL]Create MDC key successful");
     }
 }

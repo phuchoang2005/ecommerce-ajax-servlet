@@ -17,19 +17,18 @@ public class RequestTracingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException{
         try{
+            FilterDebugUtil.enter("BEGIN REQUEST TRACING FILTER");
             String id = UUID.randomUUID().toString().substring(0, 8);
             MDC.put(REQUEST_ID, id);
             logger.info("Get id tracing done");
-            FilterDebugUtil.enter("BEGIN REQUEST TRACING FILTER");
             FilterChainTracerUtil.add("RequestTracingFilter");
             filterChain.doFilter(request, response);
         }catch(Exception e){
-            FilterDebugUtil.exit("END REQUEST TRACING FILTER WITH EXCEPTION");
             logger.error(e.getMessage());
             throw new RuntimeException("Error when create session tracing id");
         }
         finally {
-            FilterDebugUtil.exit("END REQUEST TRACING FILTER WITH HAPPY");
+            FilterDebugUtil.exit("END REQUEST TRACING FILTER");
             MDC.remove(REQUEST_ID);
 
         }

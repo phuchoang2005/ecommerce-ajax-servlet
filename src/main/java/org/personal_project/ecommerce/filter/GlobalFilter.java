@@ -31,10 +31,9 @@ public class GlobalFilter implements Filter {
             filterChain.doFilter(request, response);
         }catch(Exception e){
             logger.error(e.getMessage());
-            FilterDebugUtil.exit("END GLOBAL FILTER WITH EXCEPTION"); 
         }
         finally{
-            FilterDebugUtil.exit("END GLOBAL FILTER WITH HAPPY");
+            FilterDebugUtil.exit("END GLOBAL FILTER");
         }
     }
 }

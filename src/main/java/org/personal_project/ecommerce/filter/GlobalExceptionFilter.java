@@ -31,12 +31,13 @@ public class GlobalExceptionFilter implements Filter {
             filterChain.doFilter(request, response);
         }catch(Exception e){
             logger.error(e.getMessage());
-            FilterDebugUtil.exit("CLOSE GLOBAL EXCEPTION FILTER WITH EXCEPTION");
+            logger.info("[FITLER-CHAIN]: {}", FilterChainTracerUtil.getChain());
             handleException(e, req, res);
         }finally{
-            FilterDebugUtil.exit("CLOSE GLOBAL EXCEPTION FILTER WITH HAPPY");
+            FilterDebugUtil.exit("CLOSE GLOBAL EXCEPTION");
             logger.info("[FITLER-CHAIN]: {}", FilterChainTracerUtil.getChain());
-            FilterChainTracerUtil.clear();;
+            FilterChainTracerUtil.clear();
+            FilterDebugUtil.clear();
         }
     }
     static void handleException(Throwable e, HttpServletRequest request, HttpServletResponse response) throws IOException{

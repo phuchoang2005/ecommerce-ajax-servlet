@@ -2,6 +2,7 @@ package org.personal_project.ecommerce.util;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.personal_project.ecommerce.exceptions.database.DatabaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +36,8 @@ public class DBConnectionutil {
             dataSource = new HikariDataSource(config);
             logger.info("HikariCP DataSource đã được khởi tạo thành công.");
         } catch (Exception e) {
-            logger.error("Không thể khởi tạo HikariCP DataSource", e);
-            throw new RuntimeException("Lỗi cấu hình Database", e);
+            logger.error("Không thể khởi tạo HikariCP DataSource {}", e);
+            throw new DatabaseException("Lỗi cấu hình Database");
         }
     }
 

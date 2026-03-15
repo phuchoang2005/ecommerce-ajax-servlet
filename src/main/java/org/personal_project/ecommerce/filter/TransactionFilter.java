@@ -23,20 +23,19 @@ public class TransactionFilter implements Filter {
     boolean success = false;
 
     try {
+        FilterDebugUtil.enter("ENTER TRANSACTION FILTER");
+
         conn = DBConnectionutil.getConnection();
         conn.setAutoCommit(false);
 
         DBContextUtil.setConnection(conn);
         
-        FilterDebugUtil.enter("ENTER TRANSACTION FILTER");
         FilterChainTracerUtil.add("TransactionFilter");
         chain.doFilter(request, response);
 
         success = true;
 
     } catch (Throwable e) {
-        FilterDebugUtil.exit("EXIT TRANSACTION FILTER WITH ROLLBACK PHASE");
-
         if (conn != null) {
             try {
                 logger.info("Transaction Rollback Phase");
@@ -51,7 +50,7 @@ public class TransactionFilter implements Filter {
         ErrorHandler(e, (HttpServletRequest) request, (HttpServletResponse) response);
 
     } finally {
-        FilterDebugUtil.exit("EXIT TRNSACTION FILTER WITH COMMIT PHASE");
+        FilterDebugUtil.exit("EXIT TRNSACTION FILTER");
         if (conn != null) {
             try {
                 if (success) {

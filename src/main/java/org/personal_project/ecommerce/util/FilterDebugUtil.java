@@ -20,6 +20,10 @@ public class FilterDebugUtil {
         log(d, "<<< " + name);
     }
 
+    public static void clear(){
+        depth.remove();
+    }
+
     private static void log(int depth, String msg) {
         String indent = " ".repeat(depth * 4);
         logger.info(indent + msg);
