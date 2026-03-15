@@ -2,7 +2,8 @@ package org.personal_project.ecommerce.controller;
 
 import org.personal_project.ecommerce.dto.LoginRequestDTO;
 import org.personal_project.ecommerce.dto.LoginResponseDTO;
-import org.personal_project.ecommerce.exceptions.AuthenticationException;
+import org.personal_project.ecommerce.enums.HttpStatusEnum;
+import org.personal_project.ecommerce.exceptions.authentication.AuthenticationException;
 import org.personal_project.ecommerce.service.AuthService;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +25,7 @@ public class LoginServlet extends BaseServlet{
 
         LoginResponseDTO loginResponseDTO = authService.checkAuthentication(loginRequestDTO).orElseThrow(() -> new AuthenticationException("Login Fail"));
 
-        sendResponse(response, 200, "Login Successful", loginResponseDTO);
+        sendResponse(response, HttpStatusEnum.SUCCESS.code(), HttpStatusEnum.SUCCESS.message(), loginResponseDTO);
 
         SessionUtils.refreshSession(request, loginRequestDTO.getUserName());
     }

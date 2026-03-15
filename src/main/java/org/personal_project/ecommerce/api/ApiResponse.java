@@ -1,11 +1,11 @@
-package org.personal_project.ecommerce.dto;
+package org.personal_project.ecommerce.api;
 import java.time.LocalDateTime;
 
 public class ApiResponse<T> {
-    private String timestamp;
-    private int status;
-    private String message;
-    private T data;
+    private final String timestamp;
+    private final int status;
+    private final String message;
+    private final T data;
 
     public ApiResponse(int status, String message, T data){
         this.timestamp = LocalDateTime.now().toString();

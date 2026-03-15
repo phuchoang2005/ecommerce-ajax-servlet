@@ -2,7 +2,7 @@ package org.personal_project.ecommerce.service;
 
 import org.personal_project.ecommerce.dto.LoginRequestDTO;
 import org.personal_project.ecommerce.dto.LoginResponseDTO;
-import org.personal_project.ecommerce.exceptions.AuthenticationException;
+import org.personal_project.ecommerce.exceptions.authentication.AuthenticationException;
 import org.personal_project.ecommerce.repository.AuthRepository;
 import org.personal_project.ecommerce.util.PasswordUtil;
 import org.slf4j.Logger;

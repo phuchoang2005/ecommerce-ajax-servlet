@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.personal_project.ecommerce.dto.RegisterRequestDTO;
 import org.personal_project.ecommerce.dto.RegisterResponseDTO;
+import org.personal_project.ecommerce.enums.HttpStatusEnum;
 import org.personal_project.ecommerce.service.RegisterService;
 import org.personal_project.ecommerce.util.MDCUtils;
 import org.personal_project.ecommerce.util.SessionUtils;
@@ -23,7 +24,7 @@ public class RegisterServlet extends BaseServlet{
 
         RegisterResponseDTO registerResponseDTO = registerService.register(registerRequestDTO).orElseThrow(() -> new RuntimeException("Error register"));
 
-        sendResponse(response, 201, "Register Successful", registerResponseDTO);
+        sendResponse(response, HttpStatusEnum.CREATED.code(),HttpStatusEnum.CREATED.message(), registerResponseDTO);
 
         SessionUtils.refreshSession(request, registerResponseDTO.getUsername());
     }

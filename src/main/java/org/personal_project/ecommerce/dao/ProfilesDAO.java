@@ -1,8 +1,8 @@
 package org.personal_project.ecommerce.dao;
 
 import org.personal_project.ecommerce.dto.RegisterRequestDTO;
-import org.personal_project.ecommerce.enums.DuplicateField;
-import org.personal_project.ecommerce.exceptions.DuplicateEntryException;
+import org.personal_project.ecommerce.enums.DuplicateFieldEnum;
+import org.personal_project.ecommerce.exceptions.database.DuplicateEntryDatabaseException;
 import org.personal_project.ecommerce.util.DBContextUtil;
 
 import java.sql.Connection;
@@ -23,9 +23,9 @@ public class ProfilesDAO {
             ps.executeUpdate();
         }catch(SQLException e){
             if (e.getErrorCode() == 1062){
-                DuplicateField field = DuplicateField.fromErrorMessage(e.getMessage());
+                DuplicateFieldEnum field = DuplicateFieldEnum.fromErrorMessage(e.getMessage());
                 if (field != null){
-                    throw new DuplicateEntryException(field.getFriendlyName() + " existed");
+                    throw new DuplicateEntryDatabaseException(field.getFriendlyName() + " existed");
                 }
             }else{
                 throw new RuntimeException(e.getMessage());

@@ -1,7 +1,6 @@
 package org.personal_project.ecommerce.filter;
 
-import org.personal_project.ecommerce.exceptions.DatabaseException;
-import org.personal_project.ecommerce.exceptions.InputOutputException;
+import org.personal_project.ecommerce.exceptions.database.DatabaseException;
 import org.personal_project.ecommerce.util.DBConnectionutil;
 import org.personal_project.ecommerce.util.DBContextUtil;
 import org.personal_project.ecommerce.util.FilterChainTracerUtil;
@@ -85,7 +84,7 @@ public class TransactionFilter implements Filter {
                 GlobalExceptionFilter.handleException(e, request, response);
             }else{
                 logger.error("Response already committed. Can't send JSON file");
-                throw new InputOutputException("Response already committed. Can't send JSON file");
+                throw new RuntimeException("Response already committed. Can't send JSON file");
             }
         }catch (IOException eIO){
             logger.error(eIO.getMessage());

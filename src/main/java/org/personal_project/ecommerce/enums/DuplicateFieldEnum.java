@@ -1,6 +1,6 @@
 package org.personal_project.ecommerce.enums;
 
-public enum DuplicateField {
+public enum DuplicateFieldEnum {
     USERNAME("uk_username", "Username", "username"),
     EMAIL("uk_profile_email", "Email", "email"),
     PHONE("uk_profile_phone", "Phone", "phone");
@@ -9,14 +9,14 @@ public enum DuplicateField {
     private final String friendlyName;
     private final String fieldName;
 
-    DuplicateField(String constraintName, String friendlyName, String fieldName) {
+    DuplicateFieldEnum(String constraintName, String friendlyName, String fieldName) {
         this.constraintName = constraintName;
         this.friendlyName = friendlyName;
         this.fieldName = fieldName;
     }
 
-    public static DuplicateField fromErrorMessage(String errorMessage) {
-        for (DuplicateField field : values()) {
+    public static DuplicateFieldEnum fromErrorMessage(String errorMessage) {
+        for (DuplicateFieldEnum field : values()) {
             if (errorMessage.contains(field.constraintName)) {
                 return field;
             }

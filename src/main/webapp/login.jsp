@@ -15,6 +15,6 @@
 
     <p id="result"></p>
 
-    <script src="scriptLogin.js"></script>
+    <script src="login.js"></script>
   </body>
 </html>

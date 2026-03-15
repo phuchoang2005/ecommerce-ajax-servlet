@@ -1,9 +1,9 @@
 package org.personal_project.ecommerce.dao;
 
 import org.personal_project.ecommerce.dto.UserAuthDTO;
-import org.personal_project.ecommerce.enums.DuplicateField;
-import org.personal_project.ecommerce.exceptions.DuplicateEntryException;
-import org.personal_project.ecommerce.exceptions.QueryException;
+import org.personal_project.ecommerce.enums.DuplicateFieldEnum;
+import org.personal_project.ecommerce.exceptions.database.DuplicateEntryDatabaseException;
+import org.personal_project.ecommerce.exceptions.database.QueryException;
 import org.personal_project.ecommerce.util.DBContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,9 +67,9 @@ public class UserDAO {
             }
         }catch(SQLException e){
             if (e.getErrorCode() == 1062){
-                DuplicateField field = DuplicateField.fromErrorMessage(e.getMessage());
+                DuplicateFieldEnum field = DuplicateFieldEnum.fromErrorMessage(e.getMessage());
                 if (field != null){
-                    throw new DuplicateEntryException(field.getFriendlyName() + " existed");
+                    throw new DuplicateEntryDatabaseException(field.getFriendlyName() + " existed");
                 }
             }
         }

@@ -1,9 +1,9 @@
 package org.personal_project.ecommerce.filter;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import org.personal_project.ecommerce.dto.ApiErrorResponse;
-import org.personal_project.ecommerce.exceptions.*;
+import org.personal_project.ecommerce.api.ApiExceptionResponse;
+import org.personal_project.ecommerce.enums.HttpStatusEnum;
+import org.personal_project.ecommerce.exceptions.BaseException;
 import org.personal_project.ecommerce.util.FilterChainTracerUtil;
 import org.personal_project.ecommerce.util.FilterDebugUtil;
 import org.slf4j.Logger;
@@ -40,17 +40,12 @@ public class GlobalExceptionFilter implements Filter {
         }
     }
     static void handleException(Throwable e, HttpServletRequest request, HttpServletResponse response) throws IOException{
-        ApiErrorResponse apiErrorResponse = switch(e){
-            case ValidationException ve -> new ApiErrorResponse(ve.getStatusCode(), ve.getError(),ve.getMessage(), request.getRequestURI());
-            case AuthenticationException ae -> new ApiErrorResponse(ae.getStatusCode(), ae.getError(),ae.getMessage(), request.getRequestURI());
-            case JsonSyntaxException je -> new ApiErrorResponse(HttpServletResponse.SC_BAD_REQUEST,"JSON invalid", je.getMessage(), request.getRequestURI());
-            case QueryException qe -> new ApiErrorResponse(qe.getStatusCode(), qe.getError(), qe.getMessage(), request.getRequestURI());
-            case InputOutputException ioe -> new ApiErrorResponse(ioe.getStatusCode(), ioe.getError(), ioe.getMessage(), request.getRequestURI());
-            case DatabaseException dbe -> new ApiErrorResponse(dbe.getStatusCode(), dbe.getError(), dbe.getMessage(), request.getRequestURI());
-            default -> new ApiErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage(), request.getRequestURI());
+        ApiExceptionResponse apiExceptionResponse = switch(e){
+            case BaseException exception -> new ApiExceptionResponse(exception.getStatusCode(), exception.getError(), exception.getMessage(), request.getRequestURI());
+            default -> new ApiExceptionResponse(HttpStatusEnum.INTERNAL_ERROR.code(),HttpStatusEnum.INTERNAL_ERROR.message(), e.getMessage(), request.getRequestURI());
         };
-        response.setStatus(apiErrorResponse.getStatus());
-        response.getWriter().write(new Gson().toJson(apiErrorResponse));
+        response.setStatus(apiExceptionResponse.getStatus());
+        response.getWriter().write(new Gson().toJson(apiExceptionResponse));
     }
 }
 

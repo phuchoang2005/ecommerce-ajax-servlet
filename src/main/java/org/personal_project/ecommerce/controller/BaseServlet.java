@@ -2,12 +2,12 @@ package org.personal_project.ecommerce.controller;
 
 import com.google.gson.Gson;
 
+import com.google.gson.JsonParseException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.personal_project.ecommerce.dto.ApiResponse;
-import org.personal_project.ecommerce.exceptions.InputOutputException;
-import org.personal_project.ecommerce.exceptions.ValidationException;
+import org.personal_project.ecommerce.api.ApiResponse;
+import org.personal_project.ecommerce.exceptions.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ public abstract class BaseServlet extends HttpServlet{
                 throw new ValidationException("Missing information");
             }
         }
-        logger.info("[CONTROLLER] Checking validate sucessful");
+        logger.info("[CONTROLLER] Checking validate successfully");
     }
     protected void sendResponse(HttpServletResponse response, int status, String message, Object object){
         try{
@@ -32,32 +32,32 @@ public abstract class BaseServlet extends HttpServlet{
             response.getWriter().write(new Gson().toJson(new ApiResponse<>(status, message, object)));
             logger.info("[HTTP] Response sent: Status: {}, Message: {}", status, message);
         }catch(IOException e){
-            throw new InputOutputException(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
     protected <T> T parseJSON(HttpServletRequest request, Class<T> clazz) {
 
-    try {
+        try {
 
-        logger.info("[HTTP] Request from {}", request.getRemoteAddr());
+            logger.info("[HTTP] Request from {}", request.getRemoteAddr());
 
-        BufferedReader reader = request.getReader();
+            BufferedReader reader = request.getReader();
 
-        String body = reader.lines().collect(Collectors.joining());
+            String body = reader.lines().collect(Collectors.joining());
 
-        T obj = new Gson().fromJson(body, clazz);
+            T obj = new Gson().fromJson(body, clazz);
 
-        if(obj == null){
-            throw new RuntimeException("JSON body is empty or invalid");
+            if(obj == null){
+                throw new JsonParseException("JSON body is empty or invalid");
+            }
+
+            return obj;
+
+        } catch (IOException e) {
+
+            logger.error("[CONTROLLER] Cannot read JSON", e);
+
+            throw new JsonParseException("JSON parsing error");
         }
-
-        return obj;
-
-    } catch (IOException e) {
-
-        logger.error("[CONTROLLER] Cannot read JSON", e);
-
-        throw new RuntimeException("JSON parsing error");
     }
-}
 }

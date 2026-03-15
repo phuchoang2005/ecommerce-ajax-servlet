@@ -16,14 +16,14 @@ loginForm.addEventListener("submit", async (e) => {
       body: JSON.stringify({ username, password })
     });
 
-    const { message, data } = await res.json();
+    const json = await res.json();
 
     if (!res.ok) {
-      showResult(`Lỗi (${res.status}): ${message}`, "red");
+      showResult(`Lỗi (${res.status}): ${json.detailMessage}`, "red");
       return;
     }
 
-    showResult(`${message}. Chào mừng ${data.username}`, "green");
+    showResult(`Chào mừng ${json.data.username}`, "green");
 
     // ví dụ redirect
     // setTimeout(() => location.href = "/dashboard", 1000);

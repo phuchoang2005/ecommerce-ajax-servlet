@@ -29,7 +29,7 @@ document
       if (response.ok) {
         // Xử lý RegisterResponse (200 hoặc 201)
         showAlert(
-          `Thành công: ${json.message}. Chào mừng ${json.data.username}!`,
+          `Thành công: Chào mừng ${json.data.username}!`,
           "success",
         );
         form.reset();
@@ -37,7 +37,7 @@ document
       } else {
         // Xử lý ErrorResponse
         // Theo schema: data.message, data.status, data.error
-        const errorMsg = json.message || "Đăng ký thất bại";
+        const errorMsg = json.detailMessage|| "Đăng ký thất bại";
         showAlert(`Lỗi (${json.status}): ${errorMsg}`, "error");
 
         console.error(`Error at ${json.path}: ${json.error}`);
