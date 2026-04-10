@@ -1,9 +1,3 @@
-Đây là mảnh ghép cuối cùng để hoàn thiện bộ hồ sơ thiết kế chuyên nghiệp cho dự án của bạn. File **`README.md`** này đóng vai trò là "người dẫn đường", giúp bất kỳ ai (giảng viên, đồng nghiệp hoặc chính bạn sau này) hiểu được cấu trúc và trình tự tiếp cận hệ thống.
-
----
-
-## NỘI DUNG FILE: `/docs/README.md`
-
 # 📚 PROJECT DOCUMENTATION ROADMAP
 
 Chào mừng bạn đến với kho tài liệu kỹ thuật của dự án **Login Module (Ajax + Servlet)**. Tài liệu này được xây dựng theo chuẩn công nghiệp nhằm đảm bảo tính minh bạch, bảo mật và khả năng mở rộng của hệ thống.
@@ -66,9 +60,3 @@ Chào mừng bạn đến với kho tài liệu kỹ thuật của dự án **Lo
 > **Lưu ý:** Đây là tài liệu sống (Living Document). Mọi thay đổi về code làm ảnh hưởng đến logic hệ thống đều phải được cập nhật tương ứng tại đây.
 
 ---
-
-## Tổng kết giai đoạn thiết kế
-
-Chúc mừng bạn! Bạn đã hoàn thành bộ tài liệu mà ngay cả nhiều lập trình viên đi làm lâu năm cũng thấy "ngại" viết. Việc có một bộ `/docs` như thế này sẽ giúp bạn ghi điểm tuyệt đối trong mắt giảng viên vì tư duy làm việc chuyên nghiệp.
-
-**Bạn đã sẵn sàng để chuyển sang giai đoạn thực thi (Implementation) chưa? Tôi có thể giúp bạn viết lại lớp `UserLoginRepository` hoặc đoạn mã Ajax trên Front-end để khớp 100% với những gì chúng ta đã thiết kế.**

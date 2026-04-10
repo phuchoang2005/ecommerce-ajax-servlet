@@ -31,7 +31,6 @@ public class GlobalExceptionFilter implements Filter {
             filterChain.doFilter(request, response);
         }catch(Exception e){
             logger.error(e.getMessage());
-            logger.info("[FITLER-CHAIN]: {}", FilterChainTracerUtil.getChain());
             handleException(e, req, res);
         }finally{
             FilterDebugUtil.exit("CLOSE GLOBAL EXCEPTION");

@@ -1,39 +1,61 @@
-const loginForm = document.querySelector("#loginForm");
-const resultDiv = document.querySelector("#result");
+// login.js
 
-loginForm.addEventListener("submit", async (e) => {
+// 🔐 Escape HTML để tránh XSS
+function escapeHtml(input) {
+  if (!input) return "";
+  return input
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
+}
+
+// 🔒 Render message an toàn
+function showMessage(msg) {
+  const result = document.getElementById("result");
+
+  // luôn dùng textContent (không dùng innerHTML)
+  result.textContent = String(msg);
+}
+
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const username = document.querySelector("#username").value.trim();
-  const password = document.querySelector("#password").value;
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value;
+
+  // payload gửi server
+  const payload = {
+    username: username,
+    password: password,
+  };
 
   try {
-    const res = await fetch("/auth/login", {
+    const response = await fetch("/auth/login", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify(payload),
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
-    if (!res.ok) {
-      showResult(`Lỗi (${res.status}): ${json.detailMessage}`, "red");
-      return;
+    if (response.ok) {
+      // 🔐 Escape dữ liệu server trả về
+      const safeUser = escapeHtml(json.data.username);
+
+      showMessage(`Đăng nhập thành công. Xin chào ${safeUser}`);
+    } else {
+      const errorMsg = escapeHtml(json?.message || "Đăng nhập thất bại");
+
+      showMessage(`Lỗi: ${errorMsg}`);
     }
-
-    showResult(`Chào mừng ${json.data.username}`, "green");
-
-    // ví dụ redirect
-    // setTimeout(() => location.href = "/dashboard", 1000);
-
-  } catch (err) {
-    showResult("Không thể kết nối đến server.", "red");
+  } catch (error) {
+    showMessage("Không thể kết nối tới máy chủ.");
+    console.error(error);
   }
 });
-
-function showResult(message, color) {
-  resultDiv.style.color = color;
-  resultDiv.textContent = message;
-}

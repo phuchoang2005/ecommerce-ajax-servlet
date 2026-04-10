@@ -10,7 +10,7 @@ public class AuthRepository {
     private final UserDAO userDAO = new UserDAO();
     private static final Logger logger = LoggerFactory.getLogger(AuthRepository.class);
 
-    public Optional<UserAuthDTO> getAuthInfo(String username){
+    public Optional<UserAuthDTO> findAuthInforByUsername(String username){
             logger.info("[REPOSITORY] System is loading authentication information");
 
             Optional<UserAuthDTO> result = userDAO.findAuthInfoByUsername(username);

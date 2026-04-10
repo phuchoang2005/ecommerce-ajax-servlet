@@ -24,7 +24,7 @@ public class AuthService {
 
         logger.info("[SERVICE] CHECKING VALIDATION");
 
-        Optional<LoginResponseDTO> result = Optional.of(authRepository.getAuthInfo(username)
+        Optional<LoginResponseDTO> result = Optional.of(authRepository.findAuthInforByUsername(username)
                 .filter(user -> PasswordUtil.verify(rawPassword, user.getHashedPassword()))
                 .map(user -> new LoginResponseDTO(username, user.getRole(), user.getUserId()))
                 .orElseThrow(() -> new AuthenticationException("Username or Password invalid")));

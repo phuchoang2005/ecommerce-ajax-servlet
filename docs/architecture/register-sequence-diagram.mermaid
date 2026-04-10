@@ -1,0 +1,56 @@
+sequenceDiagram
+    autonumber
+
+    participant U as User
+    participant JS as Client (AJAX)
+    participant C as Controller
+    participant S as Service
+    participant R as Repository
+    participant DB as MySQL
+
+    U->>JS: Submit register form
+    Note over JS: e.preventDefault()
+
+    JS->>C: POST /auth/register (JSON)
+
+    activate C
+    C->>C: Validate & map to RegisterRequestDTO
+
+    alt Invalid input
+        C-->>JS: 400 Validation Error
+    else Valid input
+        C->>S: register(dto)
+        activate S
+
+        S->>S: hashPassword()
+
+        S->>R: saveUser()
+        activate R
+        R->>DB: INSERT user
+
+        alt Username duplicated
+            R-->>S: error
+            S-->>C: ApiException
+            C-->>JS: 409 Username exists
+
+        else Success
+            S->>R: saveProfile()
+            R->>DB: INSERT profile
+
+            alt Profile duplicated
+                R-->>S: error
+                S-->>C: ApiException
+                C-->>JS: 409 Profile exists
+
+            else Success
+                S-->>C: RegisterResponseDTO
+                C-->>JS: 200 OK
+                JS->>U: Show success message
+            end
+        end
+
+        deactivate S
+    end
+    deactivate C
+
+    Note over JS,DB: 500 Internal Server Error (unexpected)

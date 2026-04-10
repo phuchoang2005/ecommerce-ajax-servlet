@@ -1,9 +1,3 @@
-Dưới đây là nội dung file **`authentication-requirements.md`**. Tài liệu này đóng vai trò là "bản hợp đồng" giữa các bên (Khách hàng/Product Owner và Developer) để xác định rõ hệ thống cần làm gì và làm tốt đến mức nào.
-
----
-
-## NỘI DUNG FILE: `/docs/business-logic/authentication-requirements.md`
-
 # TÀI LIỆU YÊU CẦU NGHIỆP VỤ (REQUIREMENTS SPECIFICATION)
 
 ## 1. Tổng quan (Introduction)
@@ -68,11 +62,3 @@ Tài liệu này mô tả các yêu cầu cho chức năng Xác thực người 
 | 4 | Nhập ký tự lạ vào Username (Tấn công SQLi). | Hệ thống xử lý an toàn, không xảy ra lỗi logic và trả về 401. |
 
 ---
-
-## 6. Sơ đồ luồng (Flowchart)
-
----
-
-Bản tài liệu này giúp bạn định hình rõ ràng các tiêu chuẩn "Công nghiệp" cần đạt được. Nó không chỉ là code chạy được, mà là code chạy đúng, an toàn và chuyên nghiệp.
-
-**Chúng ta đã hoàn tất bộ tài liệu tại thư mục `/docs`. Bây giờ, bạn có muốn tôi bắt đầu hướng dẫn viết code cho phần Backend (DTO, Repository, Service) theo đúng chuẩn này không?**
