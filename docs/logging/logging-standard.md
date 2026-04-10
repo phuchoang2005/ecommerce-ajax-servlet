@@ -1,9 +1,3 @@
-Đây là nội dung file **`logging-standard.md`**. Việc thiết lập một quy chuẩn ghi nhật ký (logging) rõ ràng giúp bạn nhanh chóng phát hiện lỗi (troubleshooting), theo dõi hành vi người dùng và bảo vệ hệ thống khỏi các cuộc tấn công.
-
----
-
-## NỘI DUNG FILE: `/docs/logging/logging-standard.md`
-
 # QUY CHUẨN GHI NHẬT KÝ HỆ THỐNG (LOGGING STANDARDS)
 
 ## 1. Mục tiêu (Objectives)

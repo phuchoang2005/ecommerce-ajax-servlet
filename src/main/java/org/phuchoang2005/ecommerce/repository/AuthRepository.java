@@ -1,0 +1,22 @@
+package org.phuchoang2005.ecommerce.repository;
+
+import org.phuchoang2005.ecommerce.dao.UserDAO;
+import org.phuchoang2005.ecommerce.dto.UserAuthDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.Optional;
+
+public class AuthRepository {
+    private final UserDAO userDAO = new UserDAO();
+    private static final Logger logger = LoggerFactory.getLogger(AuthRepository.class);
+
+    public Optional<UserAuthDTO> findAuthInforByUsername(String username){
+            logger.info("[REPOSITORY] System is loading authentication information");
+
+            Optional<UserAuthDTO> result = userDAO.findAuthInfoByUsername(username);
+
+            logger.info("[REPOSITORY] Load Login Information done");
+
+            return result;
+    }
+}

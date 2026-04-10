@@ -1,9 +1,3 @@
-Đây là nội dung file **`database-design.md`** được trình bày theo chuẩn tài liệu kỹ thuật chuyên nghiệp. File này cung cấp cái nhìn tổng quan về cấu trúc dữ liệu, các mối quan hệ (ERD) và các ràng buộc nghiệp vụ quan trọng.
-
----
-
-## NỘI DUNG FILE: `/docs/database/database-design.md`
-
 # THIẾT KẾ CƠ SỞ DỮ LIỆU (DATABASE DESIGN)
 
 ## 1. Sơ đồ quan hệ thực thể (ER Diagram)

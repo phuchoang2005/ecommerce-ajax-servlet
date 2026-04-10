@@ -1,0 +1,93 @@
+package org.phuchoang2005.ecommerce.filter;
+
+import org.phuchoang2005.ecommerce.exceptions.database.DatabaseException;
+import org.phuchoang2005.ecommerce.util.DBConnectionutil;
+import org.phuchoang2005.ecommerce.util.DBContextUtil;
+import org.phuchoang2005.ecommerce.util.FilterChainTracerUtil;
+import org.phuchoang2005.ecommerce.util.FilterDebugUtil;
+
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+public class TransactionFilter implements Filter {
+    private static final Logger logger = LoggerFactory.getLogger(TransactionFilter.class);
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
+    Connection conn = null;
+    boolean success = false;
+
+    try {
+        FilterDebugUtil.enter("ENTER TRANSACTION FILTER");
+
+        conn = DBConnectionutil.getConnection();
+        conn.setAutoCommit(false);
+
+        DBContextUtil.setConnection(conn);
+        
+        FilterChainTracerUtil.add("TransactionFilter");
+        chain.doFilter(request, response);
+
+        success = true;
+
+    } catch (Throwable e) {
+        if (conn != null) {
+            try {
+                logger.info("Transaction Rollback Phase");
+                conn.rollback();
+                logger.info("Transaction Rolled back");
+            } catch (SQLException ex) {
+                logger.error(ex.getMessage());
+                throw new DatabaseException("Rollback failed");
+            }
+        }
+
+        ErrorHandler(e, (HttpServletRequest) request, (HttpServletResponse) response);
+
+    } finally {
+        FilterDebugUtil.exit("EXIT TRNSACTION FILTER");
+        if (conn != null) {
+            try {
+                if (success) {
+                    logger.info("Commit Phase");
+                    conn.commit();
+                    conn.setAutoCommit(true);
+                    logger.info("Commit Done");
+                }
+            } catch (SQLException e) {
+                logger.error(e.getMessage());
+                throw new DatabaseException("Commit failed");
+            }
+
+            try {
+                logger.info("Connection Phase");
+                conn.close();
+                logger.info("Connection Closed");
+            } catch (SQLException e) {
+                logger.error(e.getMessage());
+                throw new DatabaseException("Close connection failed");
+            }
+        }
+        DBContextUtil.removeConnection();
+    }
+}
+
+    private void ErrorHandler(Throwable e, HttpServletRequest request, HttpServletResponse response){
+        try{
+            if (!response.isCommitted()){
+                GlobalExceptionFilter.handleException(e, request, response);
+            }else{
+                logger.error("Response already committed. Can't send JSON file");
+                throw new RuntimeException("Response already committed. Can't send JSON file");
+            }
+        }catch (IOException eIO){
+            logger.error(eIO.getMessage());
+            throw new DatabaseException("IO Error at Database connection");
+        }
+    }
+}
