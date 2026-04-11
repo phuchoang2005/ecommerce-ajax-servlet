@@ -1,17 +1,22 @@
-# THIẾT KẾ CƠ SỞ DỮ LIỆU (DATABASE DESIGN)
+# DATABASE DESIGN
 
-## 1. Sơ đồ quan hệ thực thể (ER Diagram)
+## 1. Entity Relationship Diagram (ERD)
 
-Sơ đồ dưới đây mô tả mối quan hệ giữa các bảng trong hệ thống quản lý bán hàng:
+The following diagram illustrates the relationships between core entities in the e-commerce system:
 
-``` mermaid
-
+```mermaid
 erDiagram
-USERS ||--|| PROFILES : "has"
-USERS ||--o{ ORDERS : "places"
-CATEGORIES ||--o{ PRODUCTS : "contains"
-ORDERS ||--|{ ORDER_DETAILS : "includes"
-PRODUCTS ||--o{ ORDER_DETAILS : "ordered_in"
+    USERS ||--|| PROFILES : "has"
+    USERS ||--o{ ORDERS : "places"
+    USERS ||--|| CARTS : "owns"
+
+    CATEGORIES ||--o{ PRODUCTS : "contains"
+
+    CARTS ||--o{ CART_ITEMS : "contains"
+    PRODUCTS ||--o{ CART_ITEMS : "added_to"
+
+    ORDERS ||--|{ ORDER_DETAILS : "includes"
+    PRODUCTS ||--o{ ORDER_DETAILS : "ordered_in"
 
     USERS {
         int user_id PK
@@ -45,12 +50,26 @@ PRODUCTS ||--o{ ORDER_DETAILS : "ordered_in"
         int category_id FK
     }
 
+    CARTS {
+        int cart_id PK
+        int user_id FK "unique"
+        datetime created_at
+        datetime updated_at
+    }
+
+    CART_ITEMS {
+        int cart_id PK, FK
+        int product_id PK, FK
+        int quantity
+        datetime added_at
+    }
+
     ORDERS {
         int order_id PK
         int user_id FK
         datetime order_date
         decimal total_amount
-        enum status "PENDING, PAID, etc."
+        enum status "PENDING, PAID, SHIPPED, COMPLETED, CANCELLED"
         string payment_method
     }
 
@@ -60,87 +79,68 @@ PRODUCTS ||--o{ ORDER_DETAILS : "ordered_in"
         int quantity
         decimal unit_price
     }
-
 ```
+
 ---
 
-## 2. Chi tiết các bảng (Data Dictionary) - Phiên bản chuẩn OpenAPI
+## 2. Data Dictionary
 
-### 2.1. Bảng `users` (Tài khoản & Phân quyền)
-
-Đây là "nguồn sự thật" cho quá trình xác thực. Việc dùng `user_id` (INT) thay vì `username` làm PK giúp tối ưu hiệu năng và khớp với đặc tả `userId` trong thiết kế API.
+### 2.1 Table: `users` (Account & Authorization)
+This table acts as the "Source of Truth" for authentication. Using an `INT` as the Primary Key (PK) instead of a `username` optimizes indexing performance and aligns with the `userId` specification in the API design.
 
 | Column | Data Type | Constraints | Description |
-| --- | --- | --- | --- |
-| **user_id** | INT | **PK**, AUTO_INCREMENT | ID định danh duy nhất (Trả về trong LoginResponse). |
-| **username** | VARCHAR(50) | UNIQUE, NOT NULL | Tên đăng nhập (Dùng để login). |
-| **password** | VARCHAR(255) | NOT NULL | Mật khẩu đã Hash (BCrypt/Argon2). |
-| **role** | ENUM('ADMIN','USER') | DEFAULT 'USER' | Phân quyền hệ thống. |
-| **created_at** | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Thời điểm tạo tài khoản. |
+| :--- | :--- | :--- | :--- |
+| **user_id** | INT | **PK**, AUTO_INCREMENT | Unique identifier for each user. |
+| **username** | VARCHAR(50) | UNIQUE, NOT NULL | Login credential. |
+| **password** | VARCHAR(255) | NOT NULL | Hashed password (e.g., BCrypt/Argon2). |
+| **role** | ENUM('ADMIN','USER') | DEFAULT 'USER' | System access level. |
+| **created_at** | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Account registration timestamp. |
 
-### 2.2. Bảng `profiles` (Thông tin cá nhân)
-
-Tách biệt thông tin đăng nhập và thông tin cá nhân giúp hệ thống linh hoạt hơn (ví dụ: một User có thể có nhiều địa chỉ hoặc một Admin không nhất thiết phải là khách hàng mua sắm).
+### 2.2 Table: `profiles` (User Information)
+Separating login credentials from personal information increases system flexibility (e.g., a user can update their contact info without affecting auth logic).
 
 | Column | Data Type | Constraints | Description |
-| --- | --- | --- | --- |
-| **profile_id** | INT | **PK**, AUTO_INCREMENT | ID định danh hồ sơ. |
-| **user_id** | INT | **FK**, UNIQUE | Liên kết 1:1 với bảng `users`. |
-| **full_name** | VARCHAR(100) | NOT NULL | Họ và tên hiển thị trên UI. |
-| **phone** | VARCHAR(20) |  | Số điện thoại liên lạc. |
-| **email** | VARCHAR(100) |  | Email nhận thông báo đơn hàng. |
-| **address** | VARCHAR(255) |  | Địa chỉ giao hàng mặc định. |
+| :--- | :--- | :--- | :--- |
+| **profile_id** | INT | **PK**, AUTO_INCREMENT | Unique identifier for the profile. |
+| **user_id** | INT | **FK**, UNIQUE | 1:1 relationship with the `users` table. |
+| **full_name** | VARCHAR(100) | NOT NULL | User's full name for UI display. |
+| **phone** | VARCHAR(20) | | Contact phone number. |
+| **email** | VARCHAR(100) | | Email for order notifications. |
+| **address** | VARCHAR(255) | | Default shipping address. |
 
-### 2.3. Bảng `categories` và `products` (Danh mục & Sản phẩm)
+### 2.3 Tables: `categories` & `products` (Inventory)
+Using English naming conventions ensures seamless integration with Java libraries (like Jackson or Hibernate) and simplifies JSON mapping in REST APIs.
 
-Chuyển đổi sang tên tiếng Anh để đồng bộ với các thư viện Java (như Hibernate/JPA) và dễ dàng mapping sang JSON Object trong API.
+* **`categories` table:** Manages product groupings (e.g., Electronics, Fashion).
+* **`products` table:**
+    * `price`: Utilizes `DECIMAL(12,2)` to ensure precision for financial transactions.
+    * `stock`: Tracks inventory levels to drive "Out of Stock" logic on the frontend.
 
-**Bảng `categories` (Danh mục):**
+### 2.4 Tables: `orders` & `order_details` (Transactions)
 
-* `category_id`: Mã loại sản phẩm (PK).
-* `category_name`: Tên danh mục (Điện tử, Thời trang...).
-
-**Bảng `products` (Sản phẩm):**
-
-* `price`: Dùng `DECIMAL(12,2)` để đảm bảo tính chính xác cho các giao dịch tiền tệ lớn.
-* `stock`: Quản lý số lượng tồn kho (quan trọng cho logic "Hết hàng" trên Web).
-* `category_id`: Khóa ngoại liên kết tới `categories`.
-
-### 2.4. Bảng `orders` và `order_details` (Giao dịch)
-
-**Bảng `orders` (Hóa đơn):**
-
-* `status`: Sử dụng `ENUM('PENDING', 'PAID', 'SHIPPING', 'DELIVERED', 'CANCELLED')`. Việc này giúp Frontend hiển thị các Label trạng thái khác nhau cho người dùng.
-* `total_amount`: Lưu tổng tiền cuối cùng sau khi tính toán (để truy vấn báo cáo nhanh hơn).
-
-**Bảng `order_details` (Chi tiết hóa đơn):**
-
-* **Composite Primary Key:** Khóa chính kết hợp `(order_id, product_id)`.
-* `unit_price`: Lưu giá tại thời điểm mua. Đây là quy tắc bắt buộc trong E-commerce để bảo toàn dữ liệu lịch sử nếu sau này sản phẩm tăng/giảm giá.
+* **`orders` table:** Tracks the high-level status of a purchase. The `status` enum allows the frontend to render appropriate progress labels.
+* **`order_details` table:**
+    * **Composite Primary Key:** A combination of `(order_id, product_id)`.
+    * **`unit_price`:** Stores the product price at the **exact moment of purchase**. This is a critical e-commerce rule to preserve historical data if product prices change in the future.
 
 ---
 
-## 3. Các ràng buộc toàn vẹn & Logic nghiệp vụ
+## 3. Referential Integrity & Business Logic
 
-### 3.1. Quy tắc Xóa/Cập nhật (Referential Integrity)
+### 3.1 Integrity Rules
+* **ON DELETE SET NULL (`products`):** If a category is deleted, its products are not removed; instead, their `category_id` is set to `NULL` to prevent data loss.
+* **ON DELETE CASCADE (`profiles`, `cart_items`, `order_details`):** When a user or an order is deleted, all associated details are automatically removed to prevent "orphaned" data.
+* **ON DELETE RESTRICT (`users` in `orders`):** Prevents the deletion of a user if they have existing order history (essential for accounting and reporting audits).
 
-* **ON DELETE SET NULL (`products`):** Nếu một Danh mục bị xóa, các Sản phẩm thuộc danh mục đó sẽ không bị xóa mà chuyển `category_id` về `NULL` (Tránh mất dữ liệu sản phẩm).
-* **ON DELETE CASCADE (`profiles` & `order_details`):** Nếu một `users` hoặc `orders` bị xóa, các thông tin chi tiết liên quan sẽ tự động bị xóa theo để tránh dữ liệu "rác".
-* **ON DELETE RESTRICT (`users` trong `orders`):** Không cho phép xóa một User nếu người đó đã có lịch sử đơn hàng (Để giữ lại dữ liệu kế toán/báo cáo).
-
-### 3.2. Kiểm soát Phân quyền (Role-based Access Control)
-
-Dựa trên cột `role` trong bảng `users`:
-
-* **Logic Java Servlet:** Khi nhận phản hồi từ Database, server sẽ kiểm tra giá trị `role`.
-* Nếu `role = 'ADMIN'`: Cho phép truy cập `/admin/*` (Quản lý sản phẩm, Xem doanh thu).
-* Nếu `role = 'USER'`: Chỉ cho phép truy cập `/account/*` và `/checkout`.
-
+### 3.2 Role-Based Access Control (RBAC)
+The `role` column in the `users` table drives the security logic within Java Servlets:
+* **ADMIN:** Authorized to access `/admin/*` routes (Inventory management, sales reports).
+* **USER:** Restricted to `/account/*` and `/checkout` routes.
 
 ---
 
-## 4. Ưu điểm của thiết kế
+## 4. Key Design Advantages
 
-1. **Chuẩn hóa Quốc tế:** Việc sử dụng tên bảng/cột tiếng Anh giúp bạn dễ dàng làm việc với các Frontend Framework (React/Angular/Vue) và các thư viện Map dữ liệu.
-2. **Khớp 100% với OpenAPI:** Bạn có thể sinh code DTO trong Java tự động mà không cần sửa tên trường (`userId` khớp `user_id`, `role` khớp `role`).
-3. **Khả năng mở rộng:** Thiết kế này cho phép bạn thêm các tính năng như "Sản phẩm yêu thích", "Đánh giá 5 sao" hoặc "Mã giảm giá" bằng cách thêm các bảng mới liên kết với `product_id` và `user_id` một cách dễ dàng.
+1.  **Standardized Conventions:** Using English table and column names facilitates better compatibility with modern Frontend frameworks and data-mapping libraries.
+2.  **API Compatibility:** The schema is 100% mapped to the OpenAPI specification. DTOs can be automatically generated where `user_id` maps to `userId` and `role` maps to `role`.
+3.  **Scalability:** The architecture easily supports future features such as "Wishlists," "Product Reviews," or "Coupon Codes" by simply linking new tables to `product_id` and `user_id`.

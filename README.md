@@ -1,496 +1,129 @@
----
+# 🛒 E-Commerce Evolution: From Servlet to Spring
 
-# 🛒 E-Commerce Platform (Learning Project)
-
-> A fullstack e-commerce system built from **core web fundamentals (Servlet + Ajax)** and gradually evolved into **Spring Boot + React/Angular architecture**.
-
-This project is designed as a **learning journey** to deeply understand how modern web applications work **from the lowest level (HTTP + Servlet)** to **enterprise-level architecture (Spring ecosystem)**.
-
-The main goal is to build a **production-like e-commerce system** that demonstrates:
-
-* Fullstack development capability
-* System architecture thinking
-* Clean API design
-* Security awareness
-* Scalable backend architecture
-
-This repository is structured as a **professional software project**, including:
-
-* system documentation
-* architecture diagrams
-* API specification
-* database design
-* logging standards
+> **A deep-dive learning journey.** This isn't just a shop; it's a transition from core Java Web fundamentals (Servlet/Ajax) to modern enterprise architecture (Spring Boot/React).
 
 ---
 
-# 🎯 PROJECT GOALS
+## 🎯 Project Vision
+The goal is to master the **Request-Response lifecycle** at its lowest level before moving into the "magic" of frameworks. By building this system, I demonstrate proficiency in:
 
-This project is built to demonstrate the following competencies required for **Java Fullstack Intern positions**:
-
-### Backend Skills
-
-* Java Servlet fundamentals
-* REST API design
-* JDBC data access
-* Authentication & Authorization
-* Session & Token management
-* Web security (XSS, CSRF, SQL Injection)
-
-### Frontend Skills
-
-* HTML/CSS layout
-* Vanilla JavaScript
-* AJAX / Fetch API
-* REST API consumption
-* State management on client side
-
-### Database Skills
-
-* Relational database design
-* Normalization
-* Foreign key constraints
-* Transaction management
-
-### Software Engineering Skills
-
-* Clean architecture
-* API documentation
-* Logging and monitoring
-* Project documentation
-* Git workflow
+* **Low-level mastery:** Handling HTTP, Sessions, and JDBC manually.
+* **Architectural evolution:** Migrating a monolithic Servlet app to a RESTful Spring Boot micro-service style.
+* **Professionalism:** Clean code, rigorous documentation, and security-first thinking.
 
 ---
 
-# 🧠 SYSTEM FEATURES
+## 🛠 Technology Stack
 
-The system will implement **core features of a real e-commerce platform**.
+### Phase 1: The Foundations (Current)
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | Vanilla JS, HTML5, CSS3, **Ajax (Fetch API)** |
+| **Backend** | **Java Servlet**, JDBC |
+| **Database** | MySQL 8.0 |
+| **Tools** | Maven, Tomcat, Jackson (JSON parsing) |
 
-## 👤 Authentication & Authorization
-
-* User registration
-* Login / logout
-* Password hashing
-* Session management
-* Role-based access control
-
-Roles:
-
-* **Customer**
-* **Admin**
-
----
-
-## 🛍 Product Catalog
-
-Users can browse and search products.
-
-Features:
-
-* Product listing
-* Product detail page
-* Product categories
-* Search products
-* Pagination
-* Sorting (price, popularity, newest)
+### Phase 2: The Modernization (Future)
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | **React** or **Angular**, Tailwind CSS |
+| **Backend** | **Spring Boot**, Spring Security, Spring Data JPA |
+| **Auth** | JWT (JSON Web Tokens) |
 
 ---
 
-## 🛒 Shopping Cart
+## 🏗 System Architecture
+The project follows a strict **Layered Architecture** to ensure concerns are separated and the code remains testable.
 
-Each user has a personal cart.
-
-Features:
-
-* Add product to cart
-* Update quantity
-* Remove product
-* Calculate total price
-* Persist cart in database
-
----
-
-## 💳 Checkout System
-
-Users can place orders.
-
-Features:
-
-* Order summary
-* Shipping information
-* Order creation
-* Order status tracking
-
-Order statuses:
-
-* Pending
-* Paid
-* Shipped
-* Completed
-* Cancelled
-
----
-
-## 📦 Order Management
-
-Users can view their purchase history.
-
-Features:
-
-* Order list
-* Order detail
-* Order status tracking
-
----
-
-## 🛠 Admin Management Panel
-
-Admin users can manage the platform.
-
-Features:
-
-* Manage products
-* Manage categories
-* Manage users
-* Manage orders
-
-Admin operations:
-
-* Create product
-* Update product
-* Delete product
-* Manage inventory
-
----
-
-# 🏗 SYSTEM ARCHITECTURE
-
-The project follows a **layered architecture** similar to enterprise Java applications.
-
-```
-Browser (HTML + JS)
-        │
-        ▼
-Controller Layer (Servlet)
-        │
-        ▼
-Service Layer (Business Logic)
-        │
-        ▼
-Repository Layer (JDBC / DAO)
-        │
-        ▼
-Database (MySQL)
+```mermaid
+graph TD
+    A[Browser: HTML/JS/Ajax] -->|JSON/HTTP| B(Controller: Servlet)
+    B --> C{Service: Business Logic}
+    C --> D[Repository: JDBC/DAO]
+    D --> E[(Database: MySQL)]
 ```
 
-Responsibilities:
-
-| Layer      | Responsibility       |
-| ---------- | -------------------- |
-| Controller | Handle HTTP requests |
-| Service    | Business logic       |
-| Repository | Database access      |
-| Database   | Persistent storage   |
+### Layer Responsibilities
+* **Controller (Servlet):** Orchestrates HTTP requests, parses JSON, and routes to services.
+* **Service Layer:** The "Brain." Handles transactions, validation, and business rules.
+* **Repository (DAO):** The "Hands." Executes SQL queries and maps ResultSets to Java Objects.
 
 ---
 
-# 📂 PROJECT STRUCTURE
+## 🧠 Core Features
 
-```
+### 👤 User & Auth
+* **Async Registration:** Real-time email availability checks via Ajax.
+* **Security:** Password hashing using **BCrypt** (No plain text allowed!).
+* **Session Management:** Role-based access for **Customers** vs. **Admins**.
+
+### 🛍 Shopping Experience
+* **Dynamic Catalog:** Pagination, filtering, and live search.
+* **Smart Cart:** Persistent cart storage (saves to DB so items stay if you log out).
+* **Checkout Flow:** Transactional order processing from "Pending" to "Completed."
+
+### 🛠 Admin Command Center
+* Inventory tracking and CRUD operations for products/categories.
+* Order fulfillment and status management.
+
+---
+
+## 🔐 Security Standards
+> "Security is not an afterthought; it is a requirement."
+
+1.  **SQL Injection:** Strictly using `PreparedStatement` for all queries.
+2.  **XSS:** Output encoding on the frontend to prevent malicious script injection.
+3.  **CSRF:** Implementation of anti-CSRF tokens for sensitive state-changing requests.
+4.  **Sensitive Data:** Passwords salted and hashed before hitting the disk.
+
+---
+
+## 📂 Project Structure
+```text
 /ecommerce-project
-│
-├── /docs
-│
-│   ├── /business-logic
-│   │   ├── authentication-requirements.md
-│   │   ├── product-management.md
-│   │   ├── cart-workflow.md
-│   │   └── order-processing.md
-│   │
-│   ├── /architecture
-│   │   ├── system-architecture.mermaid
-│   │   ├── login-sequence-diagram.mermaid
-│   │   ├── add-to-cart-sequence.mermaid
-│   │   └── checkout-sequence.mermaid
-│   │
-│   ├── /api
-│   │   ├── auth-api.yaml
-│   │   ├── product-api.yaml
-│   │   ├── cart-api.yaml
-│   │   └── order-api.yaml
-│   │
-│   ├── /database
-│   │   ├── database-design.md
-│   │   └── schema.sql
-│   │
-│   └── /logging
-│       └── logging-standard.md
-│── /logs
-│── /docker
-├── /src/main/java/org/phuchoang2005/ecommerce
-│             |                      ├── /api
-│             |                      ├── /controller
-│             |                      ├── /dao
-│             |                      ├── /dto
-│             |                      ├── /enums
-│             |                      ├── /exceptions
-│             |                      ├── /filter
-│             |                      ├── /repository
-│             |                      ├── /service
-│             |                      └── /util
-│             ├── /resource
-│             ├── /webapp
-└── README.md
+├── /docs                    # Deep-dive documentation (Requirements, API, DB)
+├── /src/main/java           # Java Backend
+│   └── /org/phuchoang2005/ecommerce
+│       ├── /api             # REST Endpoints
+│       ├── /service         # Business Logic
+│       ├── /repository      # Data Access (DAO/JDBC)
+│       └── /dto             # Data Transfer Objects
+├── /src/main/webapp         # Frontend (HTML, CSS, JS)
+├── /logs                    # Application logs for debugging
+└── pom.xml                  # Maven dependencies
 ```
 
 ---
 
-# 🗄 DATABASE DESIGN
-
-Core entities:
-
-```
-USERS
-PROFILES
-CATEGORIES
-PRODUCTS
-ORDERS
-ORDERS_DETAILS
-```
+## 📈 Roadmap to Fullstack
+* [x] **Phase 1:** Design DB Schema & Basic Servlets.
+* [ ] **Phase 2:** Implement Ajax-based Shopping Cart & Checkout.
+* [ ] **Phase 3:** Complete Admin Dashboard.
+* [ ] **Phase 4:** Refactor Backend to **Spring Boot**.
+* [ ] **Phase 5:** Rebuild Frontend in **React**.
 
 ---
 
-# 🔐 SECURITY PRACTICES
+## 📖 Documentation Guide
+To explore this project properly, please follow this path:
 
-The system will implement basic **web security mechanisms**.
-
-### Password Security
-
-* Password hashing (BCrypt)
-* No plaintext password storage
-
-### SQL Injection Prevention
-
-* PreparedStatement
-
-### XSS Prevention
-
-* Output encoding
-
-### CSRF Protection
-
-* CSRF token
-
-### Authentication
-
-* Session-based authentication
+1.  **The "Why":** `/docs/business-logic/` - Understand the features.
+2.  **The "Data":** `/docs/database/` - Explore the ERD and Schema.
+3.  **The "How":** `/docs/architecture/` - View sequence diagrams of the logic flow.
+4.  **The "Contract":** `/docs/api/` - Read the API specs for Frontend-Backend communication.
 
 ---
 
-# 📜 API DESIGN
-
-The backend exposes **REST-style APIs**.
-
-Data format: JSON
-
----
-
-# 🧭 DOCUMENTATION READING PATH
-
-To understand the system completely, read the documentation in the following order:
-
-1️⃣ **Business Logic**
-
-```
-/docs/business-logic
-```
-
-Understand the functional requirements.
+### 👨‍💻 Author
+**Phuc Hoang**
+*Focus: Java Fullstack Developer Intern Preparation*
+*Motto: "Build it from scratch to understand why the tools exist."*
 
 ---
 
-2️⃣ **Database Design**
-
-```
-/docs/database/database-design.md
-```
-
-Understand how the data model supports the business logic.
-
----
-
-3️⃣ **Architecture**
-
-```
-/docs/architecture
-```
-
-Understand system structure and request flow.
-
----
-
-4️⃣ **API Specification**
-
-```
-/docs/api
-```
-
-Understand how frontend communicates with backend.
-
----
-
-5️⃣ **Logging Standards**
-
-```
-/docs/logging/logging-standard.md
-```
-
-Understand system observability.
-
----
-
-# 🛠 TECHNOLOGY STACK
-
-### Backend
-
-* Java Servlet
-* JDBC
-* MySQL
-
-### Frontend
-
-* HTML
-* CSS
-* JavaScript
-* Fetch API / Ajax
-
-### Documentation
-
-* Markdown
-* OpenAPI 3.0
-* Mermaid.js
-
----
-
-# 🚀 FUTURE IMPROVEMENTS (SPRING BOOT MIGRATION)
-
-After mastering the **Servlet implementation**, the system will be migrated to a modern stack:
-
-### Backend
-
-* Spring Boot
-* Spring MVC
-* Spring Data JPA
-* Spring Security
-* JWT authentication
-
-### Frontend
-
-* React or Angular
-* REST API integration
-
-### Infrastructure
-
-* Docker
-* CI/CD
-* Cloud deployment
-
----
-
-# 🧪 TESTING PLAN
-
-Planned testing:
-
-* Unit testing
-* API testing
-* Integration testing
-
-Tools:
-
-* JUnit
-* Postman
-* Mock data
-
----
-
-# 💡 HOW TO UPDATE DOCUMENTATION
-
-### Diagrams
-
-Edit using:
-
-Mermaid Live Editor
-
-```
-https://mermaid.live
-```
-
----
-
-### API Specification
-
-Edit using:
-
-Swagger Editor
-
-```
-https://editor.swagger.io
-```
-
----
-
-### Markdown
-
-All documents follow **standard Markdown formatting**.
-
----
-
-# 📌 IMPORTANT NOTE
-
-This documentation is a **Living Document**.
-
-Any change in:
-
-* business logic
-* database structure
-* API contract
-* system architecture
-
-**must be reflected in the documentation.**
-
----
-
-# 📈 PROJECT ROADMAP
-
-```
-Phase 1
-Core Web Fundamentals
-Servlet + JDBC + Ajax
-
-Phase 2
-Complete E-commerce Features
-
-Phase 3
-Security Improvements
-
-Phase 4
-Refactor to Spring Boot
-
-Phase 5
-React / Angular Frontend
-```
-
----
-
-# 👨‍💻 AUTHOR
-
-Learning project for **Java Fullstack Developer Internship** preparation.
-
-Focus:
-
-* System thinking
-* Backend architecture
-* Clean API design
-* Professional documentation
-
----
+### Final Polish Tips:
+* **Mermaid Diagrams:** I added a `mermaid` block for the architecture. If you use GitHub, this will render as a real visual diagram automatically.
+* **Tables:** Using tables for the Tech Stack and Layer Responsibilities makes the document much easier to skim.
+* **Blockquotes:** I used a blockquote at the top to give a clear "Mission Statement."
+
+Does this structure feel more like a professional portfolio piece to you?
