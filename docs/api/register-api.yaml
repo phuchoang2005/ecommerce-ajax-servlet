@@ -3,9 +3,11 @@ info:
   title: E-commerce API
   description: Tài liệu API cho hệ thống thương mại điện tử
   version: 1.0.0
+
 servers:
   - url: http://localhost:8080/
     description: Local server
+
 tags:
   - name: Auth
     description: Các API liên quan đến xác thực và quản lý tài khoản
@@ -17,42 +19,58 @@ paths:
       description: Nhận thông tin người dùng và tạo tài khoản mới trên hệ thống thương mại điện tử.
       tags:
         - Auth
+
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/RegisterRequest'
+
       responses:
         '201':
           description: Đăng ký thành công
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegisterResponse'
+                $ref: '#/components/schemas/RegisterApiResponse'
+
         '400':
           description: Dữ liệu đầu vào không hợp lệ (Validation Error)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ApiErrorResponse'
               example:
+                timestamp: "2026-04-12T16:20:10"
+                status: 400
+                error: "Bad Request"
                 message: "Mật khẩu phải chứa ít nhất 8 ký tự"
-                code: "VALIDATION_ERROR"
+                path: "/auth/register"
+
         '409':
-          description: Xung đột dữ liệu (Email hoặc số điện thoại đã tồn tại)
+          description: Email hoặc số điện thoại đã tồn tại
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ApiErrorResponse'
               example:
+                timestamp: "2026-04-12T16:20:10"
+                status: 409
+                error: "Conflict"
                 message: "Email này đã được sử dụng"
-                code: "EMAIL_ALREADY_EXISTS"
+                path: "/auth/register"
+
         '500':
-          description: Lỗi máy chủ (Internal Server Error)
+          description: Lỗi máy chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
 
 components:
   schemas:
+
     RegisterRequest:
       type: object
       required:
@@ -63,62 +81,94 @@ components:
       properties:
         username:
           type: string
-          description: Username trên hệ thống của người dùng
+          description: Username trên hệ thống
+          example: "bosshp2000"
+
         fullName:
           type: string
-          description: Họ và tên đầy đủ của người dùng
+          description: Họ và tên đầy đủ
           example: "Nguyễn Văn A"
+
         email:
           type: string
           format: email
-          description: Địa chỉ email dùng để đăng nhập
+          description: Email đăng nhập
           example: "nguyenvana@example.com"
+
         password:
           type: string
           format: password
-          description: Mật khẩu (yêu cầu độ bảo mật cao)
+          description: Mật khẩu
           example: "StrongP@ssw0rd!"
+
         address:
           type: string
           description: Nơi ở
+
         phone:
           type: string
-          description: Số điện thoại liên hệ
+          description: Số điện thoại
           example: "0987654321"
+
 
     RegisterResponse:
       type: object
       properties:
-        timestamp:
-          type: string
-          description: Thời gian hoàn thành yêu cầu
-        message:
-          type: string
-          example: "Đăng ký tài khoản thành công"
         username:
           type: string
-          format: text
           example: "bosshp2000"
+
         email:
           type: string
           format: email
           example: "nguyenvana@example.com"
 
-    ErrorResponse:
+
+    RegisterApiResponse:
       type: object
       properties:
         timestamp:
           type: string
-          description: Thời gian gây ra lỗi
+          description: Thời gian phản hồi
+          example: "2026-04-12T16:20:10"
+
         status:
-          type: int
-          description: Mã trạng thái lỗi
+          type: integer
+          description: HTTP status code
+          example: 201
+
+        message:
+          type: string
+          example: "Đăng ký tài khoản thành công"
+
+        data:
+          $ref: '#/components/schemas/RegisterResponse'
+
+
+    ApiErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          description: Thời điểm lỗi xảy ra
+          example: "2026-04-12T16:20:10"
+
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+
+        error:
+          type: string
+          description: Tên lỗi HTTP
+          example: "Bad Request"
+
         message:
           type: string
           description: Thông báo lỗi chi tiết
-        error:
-          type: string
-          description: Trạng thái lỗi
+          example: "Email này đã được sử dụng"
+
         path:
           type: string
-          description: Đường dẫn lỗi
+          description: Endpoint gây lỗi
+          example: "/auth/register"

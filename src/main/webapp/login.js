@@ -46,7 +46,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
     if (response.ok) {
       // 🔐 Escape dữ liệu server trả về
-      const safeUser = escapeHtml(json.data.username);
+      const safeUser = escapeHtml(json?.data?.username);
 
       showMessage(`Đăng nhập thành công. Xin chào ${safeUser}`);
     } else {

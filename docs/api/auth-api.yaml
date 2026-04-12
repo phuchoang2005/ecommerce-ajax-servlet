@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
   title: Authentication API
   description: API phục vụ chức năng xác thực người dùng cho ứng dụng Web Servlet + Ajax.
@@ -8,14 +8,19 @@ servers:
   - url: http://localhost:8080/
     description: Local development server
 
+tags:
+  - name: Auth
+    description: API xác thực người dùng
+
 paths:
   /auth/login:
     post:
       tags:
-        - Authentication
+        - Auth
       summary: Đăng nhập hệ thống
       description: Gửi thông tin tài khoản để xác thực và khởi tạo phiên làm việc (Session).
       operationId: loginUser
+
       requestBody:
         description: Thông tin đăng nhập của người dùng
         required: true
@@ -23,34 +28,39 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/LoginRequest"
+
       responses:
         "200":
           description: Đăng nhập thành công
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LoginResponse"
+                $ref: "#/components/schemas/LoginApiResponse"
+
         "400":
-          description: Dữ liệu đầu vào không hợp lệ (Thiếu username/password)
+          description: Dữ liệu đầu vào không hợp lệ (thiếu username hoặc password)
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/ApiErrorResponse"
+
         "401":
           description: Sai tài khoản hoặc mật khẩu
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/ApiErrorResponse"
+
         "500":
-          description: Lỗi hệ thống hoặc lỗi Database
+          description: Lỗi hệ thống hoặc lỗi database
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/ApiErrorResponse"
 
 components:
   schemas:
+
     LoginRequest:
       type: object
       required:
@@ -59,8 +69,8 @@ components:
       properties:
         username:
           type: string
-          example: admin_user
           minLength: 3
+          example: admin_user
         password:
           type: string
           format: password
@@ -68,10 +78,25 @@ components:
 
     LoginResponse:
       type: object
+      description: Dữ liệu trả về khi đăng nhập thành công
+      properties:
+        userId:
+          type: integer
+          example: 101
+        username:
+          type: string
+          example: admin_user
+        role:
+          type: string
+          example: ADMIN
+
+    LoginApiResponse:
+      type: object
       properties:
         timestamp:
           type: string
           format: date-time
+          description: Thời điểm server trả response
         status:
           type: integer
           example: 200
@@ -79,24 +104,15 @@ components:
           type: string
           example: "Login successful"
         data:
-          type: object
-          properties:
-            userId:
-              type: integer
-              example: 101
-            username:
-              type: string
-              example: admin_user
-            role:
-              type: string
-              example: "ADMIN"
+          $ref: "#/components/schemas/LoginResponse"
 
-    ErrorResponse:
+    ApiErrorResponse:
       type: object
       properties:
         timestamp:
           type: string
           format: date-time
+          description: Thời điểm xảy ra lỗi
         status:
           type: integer
           example: 401

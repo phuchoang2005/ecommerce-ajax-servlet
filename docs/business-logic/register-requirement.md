@@ -57,20 +57,22 @@ The system must perform an asynchronous check for:
 **Payload (Request):**
 ```json
 {
-  "fullName": "John Doe",
-  "email": "john@example.com",
-  "password": "SecurePassword123",
-  "phone": "0987654321",
-  "phone": "hcmc"
+  "username": "string",
+  "fullName": "Nguyễn Văn A",
+  "email": "nguyenvana@example.com",
+  "password": "StrongP@ssw0rd!",
+  "address": "string",
+  "phone": "0987654321"
 }
 ```
 
-**Success Response (200 OK):**
+**Success Response (201 OK):**
 ```json
 {
-  "code": 200,
-  "status": "success",
-  "message": "Account created successfully. Redirecting to login..."
+  "timestamp": "string",
+  "message": "Đăng ký tài khoản thành công",
+  "username": "bosshp2000",
+  "email": "nguyenvana@example.com"
 }
 ```
 

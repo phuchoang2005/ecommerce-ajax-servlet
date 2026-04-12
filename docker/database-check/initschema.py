@@ -96,20 +96,21 @@ CREATE TABLE IF NOT EXISTS order_details (
     CONSTRAINT fk_detail_product
         FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
+-- 7. Indexing for search
+CREATE INDEX idx_products_price
+ON PRODUCTS(price);
+
+CREATE INDEX idx_products_name
+ON PRODUCTS(product_name);
+
+CREATE INDEX idx_products_category
+ON PRODUCTS(category_id);
 """
 
 # Thực thi lệnh tạo bảng
 for statement in sql.split(";"):
     if statement.strip():
-        cursor.execute(statement)
 
-# Chèn dữ liệu mẫu để test API
-seed_data = [
-    "INSERT IGNORE INTO users (username, password, role) VALUES ('admin_user', 'P@ssw0rd123', 'ADMIN')",
-    "INSERT IGNORE INTO users (username, password, role) VALUES ('customer01', 'password123', 'USER')"
-]
-for data in seed_data:
-    cursor.execute(data)
 
 conn.commit()
 cursor.close()

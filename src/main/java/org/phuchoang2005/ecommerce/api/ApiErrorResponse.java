@@ -2,14 +2,14 @@ package org.phuchoang2005.ecommerce.api;
 
 import java.time.LocalDateTime;
 
-public class ApiExceptionResponse{
+public class ApiErrorResponse {
     private final String timestamp;
     private final int status;
     private final String error;
     private final String mesage;
     private final String path;
 
-    public ApiExceptionResponse(int status, String error, String message, String path){
+    public ApiErrorResponse(int status, String error, String message, String path){
         this.mesage = message;
         this.error = error;
         this.timestamp = LocalDateTime.now().toString();

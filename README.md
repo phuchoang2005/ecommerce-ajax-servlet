@@ -16,12 +16,12 @@ The goal is to master the **Request-Response lifecycle** at its lowest level bef
 ## 🛠 Technology Stack
 
 ### Phase 1: The Foundations (Current)
-| Layer | Technology |
-| :--- | :--- |
-| **Frontend** | Vanilla JS, HTML5, CSS3, **Ajax (Fetch API)** |
-| **Backend** | **Java Servlet**, JDBC |
-| **Database** | MySQL 8.0 |
-| **Tools** | Maven, Tomcat, Jackson (JSON parsing) |
+| Layer | Technology                                        |
+| :--- |:--------------------------------------------------|
+| **Frontend** | Vanilla JS, HTML5, Boostrap, **Ajax (Fetch API)** |
+| **Backend** | **Java Servlet**, JDBC                            |
+| **Database** | MySQL 8.0                                         |
+| **Tools** | Maven, Tomcat, Gson (JSON parsing)                |
 
 ### Phase 2: The Modernization (Future)
 | Layer | Technology |

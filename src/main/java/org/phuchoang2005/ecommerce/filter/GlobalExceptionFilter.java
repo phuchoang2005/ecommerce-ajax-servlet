@@ -1,7 +1,7 @@
 package org.phuchoang2005.ecommerce.filter;
 
 import com.google.gson.Gson;
-import org.phuchoang2005.ecommerce.api.ApiExceptionResponse;
+import org.phuchoang2005.ecommerce.api.ApiErrorResponse;
 import org.phuchoang2005.ecommerce.enums.HttpStatusEnum;
 import org.phuchoang2005.ecommerce.exceptions.BaseException;
 import org.phuchoang2005.ecommerce.util.FilterChainTracerUtil;
@@ -40,12 +40,12 @@ public class GlobalExceptionFilter implements Filter {
         }
     }
     static void handleException(Throwable e, HttpServletRequest request, HttpServletResponse response) throws IOException{
-        ApiExceptionResponse apiExceptionResponse = switch(e){
-            case BaseException exception -> new ApiExceptionResponse(exception.getStatusCode(), exception.getError(), exception.getMessage(), request.getRequestURI());
-            default -> new ApiExceptionResponse(HttpStatusEnum.INTERNAL_ERROR.code(),HttpStatusEnum.INTERNAL_ERROR.message(), e.getMessage(), request.getRequestURI());
+        ApiErrorResponse apiErrorResponse = switch(e){
+            case BaseException exception -> new ApiErrorResponse(exception.getStatusCode(), exception.getError(), exception.getMessage(), request.getRequestURI());
+            default -> new ApiErrorResponse(HttpStatusEnum.INTERNAL_ERROR.code(),HttpStatusEnum.INTERNAL_ERROR.message(), e.getMessage(), request.getRequestURI());
         };
-        response.setStatus(apiExceptionResponse.getStatus());
-        response.getWriter().write(new Gson().toJson(apiExceptionResponse));
+        response.setStatus(apiErrorResponse.getStatus());
+        response.getWriter().write(new Gson().toJson(apiErrorResponse));
     }
 }
 
