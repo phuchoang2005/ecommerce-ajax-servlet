@@ -1,13 +1,13 @@
 package org.phuchoang2005.ecommerce.dto;
 
 public class LoginResponseDTO {
-    private String user_id;
+    private String userId;
     private String username;
     private String role;
 
-    public LoginResponseDTO(String username, String role, String user_id){
+    public LoginResponseDTO(String username, String role, String userId){
         this.username = username;
         this.role = role;
-        this.user_id = user_id;
+        this.userId = userId;
     }
 }
