@@ -9,15 +9,15 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class DBConnectionutil {
-    private static final Logger logger = LoggerFactory.getLogger(DBConnectionutil.class);
+public class DBConnectionUtil {
+    private static final Logger logger = LoggerFactory.getLogger(DBConnectionUtil.class);
     private static final HikariDataSource dataSource;
 
     static {
         try {
             HikariConfig config = new HikariConfig();
             // Cấu hình cơ bản
-            config.setJdbcUrl("jdbc:mysql://mysql:3306/ecommerce_new?useUnicode=true&characterEncoding=UTF-8");
+            config.setJdbcUrl("jdbc:mysql://mysql:3306/ecommerce?useUnicode=true&characterEncoding=UTF-8");
             config.setUsername("root");
             config.setPassword("root123");
             config.setDriverClassName("com.mysql.cj.jdbc.Driver");

@@ -1,7 +1,7 @@
 package org.phuchoang2005.ecommerce.filter;
 
 import org.phuchoang2005.ecommerce.exceptions.database.DatabaseException;
-import org.phuchoang2005.ecommerce.util.DBConnectionutil;
+import org.phuchoang2005.ecommerce.util.DBConnectionUtil;
 import org.phuchoang2005.ecommerce.util.DBContextUtil;
 import org.phuchoang2005.ecommerce.util.FilterChainTracerUtil;
 import org.phuchoang2005.ecommerce.util.FilterDebugUtil;
@@ -25,7 +25,7 @@ public class TransactionFilter implements Filter {
     try {
         FilterDebugUtil.enter("ENTER TRANSACTION FILTER");
 
-        conn = DBConnectionutil.getConnection();
+        conn = DBConnectionUtil.getConnection();
         conn.setAutoCommit(false);
 
         DBContextUtil.setConnection(conn);

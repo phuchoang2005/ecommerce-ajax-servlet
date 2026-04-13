@@ -8,10 +8,10 @@ conn = mysql.connector.connect(
 
 cursor = conn.cursor()
 
-cursor.execute("DROP DATABASE IF EXISTS ecommerce_new")
+cursor.execute("DROP DATABASE IF EXISTS ecommerce")
 
 conn.commit()
 cursor.close()
 conn.close()
 
-print("🔥 Database ecommerce_new been dropped!")
+print("🔥 Database ecommerce been dropped!")

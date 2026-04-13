@@ -1,4 +1,4 @@
 cd ../..
 mvn clean package
-cd docker/docker
+cd config/docker
 docker restart tomcat-dev
