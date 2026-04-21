@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  tomcat:
+    image: tomcat:10-jdk21
+    container_name: tomcat-dev
+    ports:
+      - "${TOMCAT_PORT}:8080"
+    volumes:
+      - ./../../target/docker-servlet.war:/usr/local/tomcat/webapps/ROOT.war
+      - ./../../logs:/usr/local/tomcat/logs
+    depends_on:
+      - mysql
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-dev
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+
+  maven:
+    image: maven:3.9-eclipse-temurin-21
+    container_name: maven-dev
+    working_dir: /app
+    volumes:
+      - ./../..:/app
+    command: mvn clean package
+    profiles: ["build"]  # chỉ chạy khi cần build
+
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile.jupyter
+    container_name: jupyter-dev
+    ports:
+      - "${JUPYTER_PORT}:8888"
+    environment:
+      - JUPYTER_TOKEN=devtoken
+    volumes:
+      - ./../database-check:/home/jovyan/work
+    depends_on:
+      - mysql
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
